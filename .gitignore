@@ -21,6 +21,11 @@ gmailpass.txt
 *.swp
 *.swo
 
+# Loose personal certificates/images in templates folder
+templates/*.jpg
+templates/*.png
+templates/*.jpeg
+
 # Vercel & Deployment
 .vercel/
 

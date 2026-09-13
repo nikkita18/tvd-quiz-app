@@ -12,7 +12,7 @@ from myEmail import Email
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'txhw-ljcc-oups-vjef-mystic-falls-2026')
+app.secret_key = os.environ.get('SECRET_KEY', 'tvd-secret-key-prod-mystic-falls-2026')
 
 emailObj = Email(app) # Email Object created
 userObj = UserOperation() # Create obj of useropertion (user module)
@@ -46,6 +46,7 @@ def leaderboard():
     return render_template('leaderboard.html')
 
 @app.route('/contect')
+@app.route('/contact')
 def contect():
     return "Contact Us"
 

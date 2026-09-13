@@ -135,24 +135,26 @@ class UserOperation:
     def userScore(self,level):
         db = self.connection()
         cur = db.cursor()
-        sq = "select score from scorecard where userEmail=%s and level=%s "
+        sq = "select score from scorecard where userEmail=%s and level=%s order by scorecardID desc limit 1"
         record = [session['userEmail'],level]
         cur.execute(sq,record)
-        row = cur.fetchall()
+        row = cur.fetchone()
+        cur.close()
+        db.close()
         if row:
-            for r in row:
-                pass
-            return r[0]
+            return row[0]
         else:
             return None
     
     def userTopRank(self,level):
         db = self.connection()
         cur = db.cursor()
-        sq = "select firstName,score,DENSE_RANK() OVER (order by score DESC) as 'rank' from scorecard s,user u where s.userEmail=u.email and level=%s limit 3"
+        sq = "select u.firstName, s.score, DENSE_RANK() OVER (order by s.score DESC) as 'rank' from scorecard s JOIN user u ON s.userEmail=u.email where s.level=%s order by s.score DESC limit 3"
         record = [level]
         cur.execute(sq,record)
         row = cur.fetchall()
+        cur.close()
+        db.close()
         return row
     
     def userTotal(self,level):
@@ -161,8 +163,10 @@ class UserOperation:
         sq = "select count(*) from scorecard where level=%s"
         record = [level]
         cur.execute(sq,record)
-        row = cur.fetchall()
+        row = cur.fetchone()
+        cur.close()
+        db.close()
         if row:
-            return row[0][0]
+            return row[0]
         else:
             return 0
