@@ -12,8 +12,10 @@ class AdminOperation:
         return get_connection()
     
     def adminLogin(self, user, password):
-        admin_user = os.environ.get('ADMIN_USERNAME', 'admin')
-        admin_pass = os.environ.get('ADMIN_PASSWORD', 'admin1234')
+        admin_user = os.environ.get('ADMIN_USERNAME')
+        admin_pass = os.environ.get('ADMIN_PASSWORD')
+        if not admin_user or not admin_pass:
+            return False
         if user == admin_user and password == admin_pass:
             session['admin'] = 'admin'
             return True
