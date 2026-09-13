@@ -1,0 +1,214 @@
+{% extends 'mainLayout.html' %}
+{% block content %}
+
+<style>
+  :root {
+    --bg-dark: #000000;
+    --card-bg: rgba(10, 10, 10, 0.92);
+    --card-border: rgba(230, 57, 70, 0.25);
+    --crimson: #e63946;
+    --crimson-dark: #c1121f;
+    --text-primary: #f8f9fa;
+    --text-muted: #94a3b8;
+  }
+
+  .lb-wrapper {
+    max-width: 800px;
+    margin: 80px auto 80px auto;
+    padding: 0 20px;
+    font-family: 'Jost', 'Outfit', sans-serif;
+    color: var(--text-primary);
+    text-align: center;
+  }
+
+  .lb-hero-card {
+    background: linear-gradient(135deg, rgba(230, 57, 70, 0.16) 0%, var(--card-bg) 75%);
+    border: 1px solid var(--card-border);
+    border-radius: 28px;
+    padding: 60px 40px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(230, 57, 70, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .lb-hero-card::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(230, 57, 70, 0.22) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .lb-hero-card::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    left: -80px;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .lb-icon {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 28px auto;
+    font-size: 2.5rem;
+    color: #fff;
+    box-shadow: 0 0 30px rgba(230, 57, 70, 0.5);
+    animation: lb-pulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes lb-pulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(230, 57, 70, 0.4); transform: scale(1); }
+    50% { box-shadow: 0 0 40px rgba(230, 57, 70, 0.7); transform: scale(1.05); }
+  }
+
+  .lb-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+
+  .lb-subtitle {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 550px;
+    margin: 0 auto 36px auto;
+  }
+
+  .lb-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+
+  .lb-feature {
+    background: rgba(11, 12, 16, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 22px 16px;
+    transition: all 0.3s ease;
+  }
+
+  .lb-feature:hover {
+    border-color: rgba(230, 57, 70, 0.4);
+    transform: translateY(-3px);
+    background: rgba(230, 57, 70, 0.08);
+  }
+
+  .lb-feature-icon {
+    font-size: 1.6rem;
+    color: #ff6b77;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .lb-feature-text {
+    font-size: 0.88rem;
+    color: #cbd5e1;
+    font-weight: 600;
+  }
+
+  .btn-lb-login {
+    background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    color: #fff;
+    border: none;
+    padding: 16px 40px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 10px 28px rgba(230, 57, 70, 0.4);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .btn-lb-login:hover {
+    color: #fff;
+    text-decoration: none;
+    transform: translateY(-3px);
+    box-shadow: 0 16px 35px rgba(230, 57, 70, 0.6);
+  }
+
+  .lb-footer-note {
+    margin-top: 30px;
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+
+  .lb-footer-note a {
+    color: #ff858f;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .lb-footer-note a:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+
+  @media (max-width: 640px) {
+    .lb-hero-card { padding: 40px 22px; }
+    .lb-title { font-size: 1.6rem; }
+    .lb-features { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+
+<div class="lb-wrapper">
+  <div class="lb-hero-card">
+    <div class="lb-icon">
+      <i class="fas fa-trophy"></i>
+    </div>
+
+    <h1 class="lb-title">🩸 Global Leaderboard</h1>
+    <p class="lb-subtitle">
+      The battlefield awaits. Sign in to see where you stand among the elite hunters
+      of Mystic Falls. Only the worthy rise to the top.
+    </p>
+
+    <div class="lb-features">
+      <div class="lb-feature">
+        <span class="lb-feature-icon"><i class="fas fa-crown"></i></span>
+        <span class="lb-feature-text">Top 3 Podium</span>
+      </div>
+      <div class="lb-feature">
+        <span class="lb-feature-icon"><i class="fas fa-layer-group"></i></span>
+        <span class="lb-feature-text">3 Difficulty Tiers</span>
+      </div>
+      <div class="lb-feature">
+        <span class="lb-feature-icon"><i class="fas fa-bolt"></i></span>
+        <span class="lb-feature-text">Real-Time Scores</span>
+      </div>
+    </div>
+
+    <a href="/userLogin" class="btn-lb-login">
+      <i class="fas fa-sign-in-alt"></i>
+      <span>Sign In to View Rankings</span>
+    </a>
+
+    <p class="lb-footer-note">
+      Don't have an account? <a href="/userSignup">Create one now</a> and begin your trial.
+    </p>
+  </div>
+</div>
+
+{% endblock %}

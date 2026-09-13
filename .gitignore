@@ -1,0 +1,30 @@
+# Python & Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Sensitive & Local Secrets
+.env
+.env.local
+gmailpass.txt
+
+# IDE & Editor files
+.vscode/
+.idea/
+.claude/
+*.swp
+*.swo
+
+# Vercel & Deployment
+.vercel/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini

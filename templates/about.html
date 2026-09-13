@@ -1,0 +1,804 @@
+{% extends 'mainLayout.html' %}
+{% block content%}
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Outfit:wght@300;400;500;600;700&family=Work+Sans:wght@200;300;400;500&display=swap');
+
+:root {
+  --tvd-crimson: #c8102e;
+  --tvd-dark-bg: #000000;
+  --tvd-text-muted: #a39b9e;
+  --tvd-font-cinzel: 'Cinzel', serif;
+  --tvd-font-outfit: 'Outfit', sans-serif;
+  --tvd-font-body: 'Work Sans', sans-serif;
+}
+
+/* ==========================================================================
+   NEW LORE SECTIONS: GRIMOIRE, TIMELINE, CONFLICT
+   ========================================================================== */
+
+/* Main Page Heading */
+.tvd-main-heading {
+  font-family: var(--tvd-font-cinzel);
+  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+  font-weight: 800;
+  text-align: center;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.9), 0 0 30px rgba(200, 16, 46, 0.65);
+  position: relative;
+  width: 100%;
+}
+
+.tvd-main-heading span {
+  color: var(--tvd-crimson);
+  background: linear-gradient(135deg, #ffffff 10%, #ff5268 50%, #c8102e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* General Section Headings */
+.tvd-sub-section {
+  padding: 70px 20px 40px;
+  position: relative;
+  z-index: 5;
+  background: radial-gradient(ellipse at 50% 0%, rgba(35, 10, 16, 0.45) 0%, rgba(5, 2, 3, 0.85) 75%);
+  border-top: 1px solid rgba(200, 16, 46, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  margin-top: 30px;
+  border-radius: 20px;
+}
+
+.tvd-section-title {
+  font-family: var(--tvd-font-cinzel);
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(200, 16, 46, 0.5);
+}
+
+.tvd-section-subtitle {
+  font-family: var(--tvd-font-body);
+  font-size: 0.95rem;
+  color: var(--tvd-text-muted);
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+}
+
+/* Grimoire & Relics Grid */
+.tvd-relics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-top: 30px;
+  padding: 0 20px;
+}
+
+.tvd-relic-card {
+  background: rgba(10, 10, 10, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+}
+
+.tvd-relic-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--tvd-crimson);
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+.tvd-relic-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(200, 16, 46, 0.4);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(200, 16, 46, 0.15);
+}
+
+.tvd-relic-card:hover::before {
+  opacity: 1;
+}
+
+/* Custom individual glows based on relic types */
+.tvd-relic-card[data-relic="daylight"]:hover {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(51, 153, 255, 0.25);
+  border-color: rgba(51, 153, 255, 0.4);
+}
+.tvd-relic-card[data-relic="daylight"]::before { background: #3399ff; }
+
+.tvd-relic-card[data-relic="talisman"]:hover {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 178, 102, 0.25);
+  border-color: rgba(255, 178, 102, 0.4);
+}
+.tvd-relic-card[data-relic="talisman"]::before { background: #ffb266; }
+
+.tvd-relic-card[data-relic="stake"]:hover {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(200, 16, 46, 0.35);
+  border-color: rgba(200, 16, 46, 0.5);
+}
+.tvd-relic-card[data-relic="stake"]::before { background: var(--tvd-crimson); }
+
+.tvd-relic-card[data-relic="ascendant"]:hover {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(178, 102, 255, 0.25);
+  border-color: rgba(178, 102, 255, 0.4);
+}
+.tvd-relic-card[data-relic="ascendant"]::before { background: #b266ff; }
+
+.tvd-relic-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.tvd-relic-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: #ffcbd3;
+  transition: all 0.3s ease;
+}
+
+.tvd-relic-card:hover .tvd-relic-icon {
+  background: rgba(142, 9, 35, 0.15);
+  border-color: rgba(200, 16, 46, 0.4);
+  color: #ff5268;
+  transform: scale(1.08);
+}
+
+.tvd-relic-meta {
+  text-align: left;
+}
+
+.tvd-relic-title {
+  font-family: var(--tvd-font-cinzel);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 2px;
+}
+
+.tvd-relic-affinity {
+  font-family: var(--tvd-font-outfit);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: #ff9ca8;
+  letter-spacing: 0.08em;
+}
+
+.tvd-relic-desc {
+  font-family: var(--tvd-font-body);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--tvd-text-muted);
+  text-align: left;
+  margin: 0 0 16px;
+}
+
+.tvd-relic-effect {
+  font-family: var(--tvd-font-outfit);
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: #cfc6c8;
+  text-align: left;
+  font-style: italic;
+}
+
+/* History Timeline */
+.tvd-timeline {
+  position: relative;
+  max-width: 900px;
+  margin: 40px auto 0;
+  padding: 20px 0;
+}
+
+.tvd-timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  background: linear-gradient(180deg, transparent, rgba(200, 16, 46, 0.4) 15%, rgba(200, 16, 46, 0.4) 85%, transparent);
+  transform: translateX(-50%);
+}
+
+.tvd-timeline-item {
+  position: relative;
+  width: 50%;
+  padding: 0 40px;
+  margin-bottom: 40px;
+  box-sizing: border-box;
+}
+
+.tvd-timeline-item::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  width: 14px;
+  height: 14px;
+  background: var(--tvd-dark-bg);
+  border: 2px solid var(--tvd-crimson);
+  border-radius: 50%;
+  z-index: 5;
+  transition: all 0.3s ease;
+}
+
+.tvd-timeline-item.tvd-left {
+  left: 0;
+  text-align: right;
+}
+
+.tvd-timeline-item.tvd-left::after {
+  right: -9px;
+}
+
+.tvd-timeline-item.tvd-right {
+  left: 50%;
+  text-align: left;
+}
+
+.tvd-timeline-item.tvd-right::after {
+  left: -9px;
+}
+
+.tvd-timeline-item:hover::after {
+  background: #ff5268;
+  box-shadow: 0 0 10px #ff5268;
+  transform: scale(1.2);
+}
+
+.tvd-timeline-year {
+  font-family: var(--tvd-font-cinzel);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ff334b;
+  margin-bottom: 6px;
+}
+
+.tvd-timeline-card {
+  background: rgba(10, 10, 10, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
+  display: inline-block;
+  width: 100%;
+  text-align: left;
+}
+
+.tvd-timeline-item.tvd-left .tvd-timeline-card {
+  text-align: right;
+}
+
+.tvd-timeline-item:hover .tvd-timeline-card {
+  border-color: rgba(200, 16, 46, 0.3);
+  transform: translateY(-2px);
+}
+
+.tvd-timeline-card h5 {
+  font-family: var(--tvd-font-cinzel);
+  font-size: 1.05rem;
+  color: #fff;
+  margin: 0 0 8px;
+}
+
+.tvd-timeline-card p {
+  font-family: var(--tvd-font-body);
+  font-size: 0.82rem;
+  color: var(--tvd-text-muted);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Faction Quote Battle */
+.tvd-battle-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-top: 20px;
+  padding: 0 20px;
+}
+
+.tvd-battle-side {
+  background: linear-gradient(145deg, rgba(20, 7, 10, 0.9), rgba(5, 2, 4, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 18px;
+  padding: 30px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.tvd-battle-side::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.15;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+  transition: transform 0.6s ease;
+}
+
+.tvd-battle-side.stefan::before {
+  background-image: url("{{ url_for('static', filename='img/Untitled design (11).png') }}");
+}
+
+.tvd-battle-side.damon::before {
+  background-image: url("{{ url_for('static', filename='img/Untitled design (13).png') }}");
+}
+
+.tvd-battle-side:hover {
+  transform: scale(1.01);
+  border-color: rgba(200, 16, 46, 0.3);
+}
+
+.tvd-battle-side:hover::before {
+  transform: scale(1.05);
+}
+
+.tvd-battle-side-content {
+  position: relative;
+  z-index: 2;
+}
+
+.tvd-battle-char-img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 2px solid var(--tvd-crimson);
+  object-fit: cover;
+  margin: 0 auto 14px;
+}
+
+.tvd-battle-side h4 {
+  font-family: var(--tvd-font-cinzel);
+  font-size: 1.35rem;
+  color: #fff;
+  margin: 0 0 4px;
+}
+
+.tvd-battle-philosoph {
+  font-family: var(--tvd-font-outfit);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: #ff9ca8;
+  letter-spacing: 0.08em;
+  margin-bottom: 20px;
+}
+
+.tvd-battle-quote {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.35rem;
+  color: #f1cbd2;
+  line-height: 1.5;
+  margin: 0 0 24px;
+}
+
+.tvd-choose-btn {
+  font-family: var(--tvd-font-outfit);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tvd-choose-btn:hover {
+  background: var(--tvd-crimson);
+  border-color: #ff4760;
+  box-shadow: 0 0 15px rgba(200, 16, 46, 0.4);
+}
+
+.tvd-choose-btn.active {
+  background: linear-gradient(135deg, #8e0923, #5a0314);
+  border-color: #ff334b;
+  box-shadow: 0 4px 15px rgba(142, 9, 35, 0.5);
+}
+
+/* Responsive new sections */
+@media (max-width: 768px) {
+  .tvd-timeline::before {
+    left: 20px;
+  }
+  .tvd-timeline-item {
+    width: 100%;
+    padding-left: 45px;
+    padding-right: 0;
+    text-align: left;
+  }
+  .tvd-timeline-item.tvd-left .tvd-timeline-card {
+    text-align: left;
+  }
+  .tvd-timeline-item.tvd-left::after,
+  .tvd-timeline-item.tvd-right::after {
+    left: 11px;
+  }
+  .tvd-timeline-item.tvd-right {
+    left: 0;
+  }
+  .tvd-battle-row {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<h1 class="tvd-main-heading"><span>About</span> The Vampire Diaries</h1>
+
+<section class="about-mystic">
+  
+      <!-- No fallback text -->
+    
+  
+  <div class="about-content">
+    <div class="about-left">
+      <div class="scrolling-images">
+        <img src="{{ url_for('static', filename='img/🤍.jpeg') }}" alt="">
+        <img src="{{ url_for('static', filename='img/21e9f961-b425-4ad7-84d6-709a81392ad4.jpeg') }}" alt="">
+        <img src="{{ url_for('static', filename='img/elena gilbert.jpeg') }}" alt="">
+       
+      </div>
+    </div>
+    <div class="about-right">
+      <h3 style="color: rgba(195, 41, 41, 0.889);">The Legacy</h3>
+      <p>
+        The Vampire Diaries tells a story drenched in blood, love, and betrayal.
+        Set in Mystic Falls, it follows Elena Gilbert as she finds herself
+        tangled between two immortal brothers: Stefan, the noble, and Damon, the
+        dangerous. As secrets unfold, friendships are tested, and hearts broken —
+        the town’s supernatural history begins to awaken.
+      </p>
+      <img src="{{ url_for('static', filename='img/Screenshot 2025-06-10 012838.png') }}" alt="" style="height: 320px; width: 105%;margin-left: 0%;">
+    </div>
+    <div class="overlay-video">
+    <video autoplay muted loop playsinline>
+      <source src="{{ url_for('static', filename='video/7a9bcc1ebadfbc4c561b60e51d2c8e6a.mp4') }}" type="video/mp4" />
+      </video>
+    <div class="overlay-text">
+      <h1 class="headline">“They were never just brothers...”</h1>
+      <p class="subline">Welcome to the story that never ends.</p>
+    </div>
+  </div>
+  </div>
+  
+</section>
+<!-- 🩸 NEW QUOTE SLIDER -->
+<section class="quote-slider-wrapper">
+  
+  <div class="quote-slider-container">
+    <div class="quote-card">“You want a love that consumes you.”<span>– Elena Gilbert</span></div>
+    <div class="quote-card">“Hello, brother.”<span>– Damon Salvatore</span></div>
+    <div class="quote-card">“I will always love you.”<span>– Stefan Salvatore</span></div>
+    <div class="quote-card">“I’m not human. And I miss it.”<span>– Caroline Forbes</span></div>
+    <div class="quote-card">“You're strong, beautiful, you're full of light.”<span>– Klaus Mikaelson</span></div>
+    <div class="quote-card">“We choose our own path. Our values and our actions.”<span>– Bonnie Bennett</span></div>
+  </div>
+</section>
+
+<!-- 🕯️ Section 1: The Mystic Falls Grimoire & Relics -->
+<section class="tvd-sub-section" aria-label="Grimoire and Relics">
+  <h2 class="tvd-section-title">🕯️ The Mystic Falls Grimoire 🕯️</h2>
+  <p class="tvd-section-subtitle">
+    Magical conduits, ancient seals, and lethal relics that shaped the eternal struggle between predators and prey.
+  </p>
+
+  <div class="tvd-relics-grid">
+    <!-- Relic 1: Lapis Lazuli Daylight Ring -->
+    <article class="tvd-relic-card" data-relic="daylight">
+      <div class="tvd-relic-header">
+        <div class="tvd-relic-icon"><i class="fas fa-ring"></i></div>
+        <div class="tvd-relic-meta">
+          <h3 class="tvd-relic-title">Daylight Rings</h3>
+          <span class="tvd-relic-affinity">Species: Vampire</span>
+        </div>
+      </div>
+      <p class="tvd-relic-desc">
+        Enchanted lapis lazuli rings crafted by Bennett Witches, allowing vampires to walk under sunlight without burning.
+      </p>
+      <div class="tvd-relic-effect">
+        <strong>Active Protection:</strong> Immunity to solar combustion.
+      </div>
+    </article>
+
+    <!-- Relic 2: Gilbert Ring -->
+    <article class="tvd-relic-card" data-relic="talisman">
+      <div class="tvd-relic-header">
+        <div class="tvd-relic-icon"><i class="fas fa-shield-alt"></i></div>
+        <div class="tvd-relic-meta">
+          <h3 class="tvd-relic-title">Gilbert Ring</h3>
+          <span class="tvd-relic-affinity">Species: Human Only</span>
+        </div>
+      </div>
+      <p class="tvd-relic-desc">
+        Protects the human wearer from death caused by any supernatural entity. However, repeated deaths chip away at sanity.
+      </p>
+      <div class="tvd-relic-effect">
+        <strong>Resurrection:</strong> Instant revival from supernatural trauma.
+      </div>
+    </article>
+
+    <!-- Relic 3: White Oak Stake -->
+    <article class="tvd-relic-card" data-relic="stake">
+      <div class="tvd-relic-header">
+        <div class="tvd-relic-icon"><i class="fas fa-skull-crossbones"></i></div>
+        <div class="tvd-relic-meta">
+          <h3 class="tvd-relic-title">White Oak Stake</h3>
+          <span class="tvd-relic-affinity">Species: Original Vampire Killer</span>
+        </div>
+      </div>
+      <p class="tvd-relic-desc">
+        Carved from the singular ancient White Oak tree used in the spell of creation. The only weapon that can burn an Original to ash.
+      </p>
+      <div class="tvd-relic-effect">
+        <strong>Lethal Threat:</strong> Absolute ash combustion on contact.
+      </div>
+    </article>
+
+    <!-- Relic 4: The Ascendant -->
+    <article class="tvd-relic-card" data-relic="ascendant">
+      <div class="tvd-relic-header">
+        <div class="tvd-relic-icon"><i class="fas fa-compass"></i></div>
+        <div class="tvd-relic-meta">
+          <h3 class="tvd-relic-title">The Ascendant</h3>
+          <span class="tvd-relic-affinity">Species: Gemini Coven Key</span>
+        </div>
+      </div>
+      <p class="tvd-relic-desc">
+        A celestial key linked to the power of a Gemini Witch and a solar eclipse, capable of opening the gateway to Prison Worlds.
+      </p>
+      <div class="tvd-relic-effect">
+        <strong>Dimensional Gate:</strong> Exiles targets to eternal prison cycles.
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ⚜️ Section 2: Historical Timeline -->
+<section class="tvd-sub-section" aria-label="Mystic Falls Chronology">
+  <h2 class="tvd-section-title">⚜️ Chronology of Blood ⚜️</h2>
+  <p class="tvd-section-subtitle">
+    Follow the dark milestones that stained the history of Mystic Falls over a thousand years.
+  </p>
+
+  <div class="tvd-timeline">
+    <!-- 10th Century -->
+    <div class="tvd-timeline-item tvd-left">
+      <div class="tvd-timeline-year">1000 AD</div>
+      <div class="tvd-timeline-card">
+        <h5>Birth of the Originals</h5>
+        <p>To protect her family from werewolves, Esther Mikaelson uses a dark solar spell to forge the first vampires.</p>
+      </div>
+    </div>
+
+    <!-- 1864 -->
+    <div class="tvd-timeline-item tvd-right">
+      <div class="tvd-timeline-year">1864 AD</div>
+      <div class="tvd-timeline-card">
+        <h5>The Battle of Mystic Falls</h5>
+        <p>Founding Families trap and burn 27 vampires. Stefan and Damon Salvatore are turned by Katherine Pierce.</p>
+      </div>
+    </div>
+
+    <!-- 2009 -->
+    <div class="tvd-timeline-item tvd-left">
+      <div class="tvd-timeline-year">2009 AD</div>
+      <div class="tvd-timeline-card">
+        <h5>The Return & Awakening</h5>
+        <p>Stefan Salvatore returns to Mystic Falls to find Elena Gilbert, triggering the return of Damon and the awakening of tomb vampires.</p>
+      </div>
+    </div>
+
+    <!-- 2018 -->
+    <div class="tvd-timeline-item tvd-right">
+      <div class="tvd-timeline-year">2018 AD</div>
+      <div class="tvd-timeline-card">
+        <h5>The Salvatore School</h5>
+        <p>Alaric and Caroline co-found the Salvatore Boarding School to protect and mentor the next generation of supernatural youths.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 🎭 Section 3: Faction Quote Duel / Comparison -->
+<section class="tvd-sub-section" aria-label="Salvatore Dichotomy">
+  <h2 class="tvd-section-title">🎭 The Salvatore Dichotomy 🎭</h2>
+  <p class="tvd-section-subtitle">
+    Noble sacrifice vs. beautiful chaos. Choose the brotherly path that consumes you.
+  </p>
+
+  <div class="tvd-battle-row">
+    <!-- Stefan Side -->
+    <div class="tvd-battle-side stefan">
+      <div class="tvd-battle-side-content">
+        <img src="{{ url_for('static', filename='img/Untitled design (11).png') }}" alt="Stefan" class="tvd-battle-char-img" onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/stefan.jpg') }}';">
+        <h4>Stefan Salvatore</h4>
+        <span class="tvd-battle-philosoph">Noble Redemption</span>
+        <blockquote class="tvd-battle-quote">
+          "We choose our own path. Our values and our actions, they define who we are."
+        </blockquote>
+        <button class="tvd-choose-btn" id="chooseStefan">Stand with Stefan</button>
+      </div>
+    </div>
+
+    <!-- Damon Side -->
+    <div class="tvd-battle-side damon">
+      <div class="tvd-battle-side-content">
+        <img src="{{ url_for('static', filename='img/Untitled design (13).png') }}" alt="Damon" class="tvd-battle-char-img" onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/damon.jpg') }}';">
+        <h4>Damon Salvatore</h4>
+        <span class="tvd-battle-philosoph">Beautiful Danger</span>
+        <blockquote class="tvd-battle-quote">
+          "I've been in love. It's painful, pointless, and overrated. But I can't resist it."
+        </blockquote>
+        <button class="tvd-choose-btn" id="chooseDamon">Stand with Damon</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  /* ============================================================
+     SALVATORE CHOICE BUTTONS
+     ============================================================ */
+  const chooseStefan = document.getElementById('chooseStefan');
+  const chooseDamon = document.getElementById('chooseDamon');
+
+  if (chooseStefan && chooseDamon) {
+    const savedChoice = localStorage.getItem('tvd_salvatore_choice');
+    if (savedChoice === 'stefan') chooseStefan.classList.add('active');
+    if (savedChoice === 'damon') chooseDamon.classList.add('active');
+
+    chooseStefan.addEventListener('click', () => {
+      chooseStefan.classList.add('active');
+      chooseDamon.classList.remove('active');
+      localStorage.setItem('tvd_salvatore_choice', 'stefan');
+      triggerVampirePulse('rgba(255, 90, 90, 0.4)');
+    });
+
+    chooseDamon.addEventListener('click', () => {
+      chooseDamon.classList.add('active');
+      chooseStefan.classList.remove('active');
+      localStorage.setItem('tvd_salvatore_choice', 'damon');
+      triggerVampirePulse('rgba(142, 9, 35, 0.6)');
+    });
+  }
+
+  function triggerVampirePulse(color) {
+    const pulse = document.createElement('div');
+    pulse.style.position = 'fixed';
+    pulse.style.inset = '0';
+    pulse.style.zIndex = '9999';
+    pulse.style.pointerEvents = 'none';
+    pulse.style.background = 'transparent';
+    pulse.style.boxShadow = `inset 0 0 100px ${color}`;
+    pulse.style.transition = 'opacity 0.6s ease';
+    pulse.style.opacity = '1';
+    document.body.appendChild(pulse);
+    setTimeout(() => { pulse.style.opacity = '0'; }, 50);
+    setTimeout(() => pulse.remove(), 700);
+  }
+});
+</script>
+
+{%endblock%}
+
+
+
+
+<!-- <!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Mystic Falls Trivia</title>
+
+  
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+ -->
+
+  <!-- Bootstrap CSS -->
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+  <link href="css/style.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100;1,100&display=swap');
+</style>
+
+     <style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600&display=swap');
+</style>
+
+
+
+ <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  
+</head>
+<body> -->
+
+  <!-- 🧛 Navbar -->
+  <!-- <nav class="navbar" style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif ;
+  font-size: large;
+  font-weight: 100;
+  font-style: normal;" >
+    <img src="{{ url_for('static', filename='img/Untitled design (10).png') }}" alt="Logo" style="width: 14%; margin-left: 2%;">
+    <ul class="nav-links" style="margin-left: 48%;">
+      <li><a href="/">Home</a></li>
+      <li><a href="/about"  class="active">About</a></li>
+      <li><a href="/characters">Characters</a></li>
+      <li><a href="/quiz">Quiz</a></li>
+      <li><a href="/leaderboard">Leaderboard</a></li> -->
+      <!-- From Uiverse.io by cssbuttons-io --> 
+    <!-- From Uiverse.io by cssbuttons-io --> 
+<!-- <button class="c-button c-button--gooey"> Sign Up  
+  <div class="c-button__blobs">
+  <div></div>
+  <div></div>
+  <div></div>
+  </div>
+</button>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="display: block; height: 0; width: 0;">
+  <defs>
+    <filter id="goo">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"></feGaussianBlur>
+      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo"></feColorMatrix>
+      <feBlend in="SourceGraphic" in2="goo"></feBlend>
+    </filter>
+  </defs>
+</svg>
+    </ul>
+    
+
+  </nav>
+
+
+
+
+
+  </body>
+</html> -->

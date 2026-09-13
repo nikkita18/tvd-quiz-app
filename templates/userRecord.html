@@ -1,0 +1,149 @@
+{% extends 'adminLayout.html' %}
+
+{% block header %}
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+  <span class="header-badge" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; background: rgba(230, 57, 70, 0.15); color: #e63946; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(230, 57, 70, 0.3);">User Registry</span>
+  <h2 style="margin: 0; font-family: 'Cinzel', serif; font-weight: 700; color: #fff;">👥 Registered Hunters</h2>
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+  .user-table-card {
+    background: rgba(10, 10, 10, 0.92);
+    border: 1px solid rgba(230, 57, 70, 0.25);
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 900px;
+    margin: 20px auto 50px auto;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+  }
+  .user-search-bar {
+    position: relative;
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .user-search-bar i {
+    position: absolute;
+    left: 14px;
+    top: 36%;
+    transform: translateY(-50%);
+    color: #64748b;
+  }
+  .user-search-bar input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 10px 16px 10px 38px;
+    color: #fff;
+    font-size: 0.9rem;
+    transition: all 0.25s ease;
+  }
+  .user-search-bar input:focus {
+    border-color: #e63946;
+    outline: none;
+    box-shadow: 0 0 12px rgba(230, 57, 70, 0.4);
+  }
+  .user-table {
+    width: 100%;
+    color: #e2e8f0;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+  }
+  .user-table th {
+    background: rgba(0, 0, 0, 0.9);
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    padding: 14px 18px;
+    border: none;
+    border-bottom: 2px solid rgba(230, 57, 70, 0.3);
+  }
+  .user-table tr.user-row {
+    background: rgba(18, 18, 18, 0.8);
+    transition: all 0.25s ease;
+  }
+  .user-table tr.user-row:hover {
+    background: rgba(230, 57, 70, 0.1);
+    transform: translateY(-2px);
+  }
+  .user-table td {
+    padding: 16px 18px;
+    vertical-align: middle;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .user-table td:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+  }
+  .user-table td:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+  .user-avatar-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(230, 57, 70, 0.2);
+    color: #e63946;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    font-weight: bold;
+  }
+</style>
+
+<div class="user-table-card">
+    <div class="user-search-bar">
+      <i class="fas fa-search"></i>
+      <input type="text" id="userSearchInput" placeholder="Live search hunters by name, email or mobile..." onkeyup="filterUsers()">
+    </div>
+
+    <table class="user-table" id="usersTable">
+        <thead>
+            <tr>
+                <th>Hunter Name</th>
+                <th>Mobile Contact</th>
+                <th>Email Address</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in record %}
+            <tr class="user-row">
+                <td>
+                    <div style="display: flex; align-items: center;">
+                      <div class="user-avatar-icon">
+                        <i class="fas fa-user-ninja"></i>
+                      </div>
+                      <span style="font-weight: 600; color: #f8f9fa;">{{r[0]}} {{r[1]}}</span>
+                    </div>
+                </td>
+                <td style="color: #cbd5e1;"><i class="fas fa-phone-alt me-2" style="color: #64748b; font-size: 0.85rem;"></i> {{r[2]}}</td>
+                <td style="color: #e63946; font-weight: 500;"><i class="fas fa-envelope me-2" style="color: #64748b; font-size: 0.85rem;"></i> {{r[3]}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+  function filterUsers() {
+    const query = document.getElementById('userSearchInput').value.toLowerCase();
+    const rows = document.querySelectorAll('#usersTable tbody tr.user-row');
+
+    rows.forEach(row => {
+      const text = row.innerText.toLowerCase();
+      if (text.includes(query)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+</script>
+{% endblock %}

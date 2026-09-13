@@ -1,0 +1,220 @@
+{% extends "userLayout.html" %}
+
+{% block title %}Hunter Profile | Mystic Realm{% endblock %}
+
+{% block header %}
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+  <span class="header-badge" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; background: rgba(230, 57, 70, 0.15); color: #e63946; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(230, 57, 70, 0.3);">Identity Vault</span>
+  <h2 style="margin: 0; font-family: 'Cinzel', serif; font-weight: 700; color: #fff;">👤 Hunter Profile</h2>
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+  .profile-card {
+    background: rgba(10, 10, 10, 0.92);
+    border: 1px solid rgba(230, 57, 70, 0.25);
+    border-radius: 24px;
+    padding: 40px 35px;
+    max-width: 650px;
+    margin: 20px auto 50px auto;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(230, 57, 70, 0.1);
+  }
+  .profile-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .profile-avatar {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(230, 57, 70, 0.3) 0%, rgba(193, 18, 31, 0.6) 100%);
+    border: 2px solid #e63946;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px auto;
+    color: #fff;
+    font-size: 2.2rem;
+    box-shadow: 0 0 20px rgba(230, 57, 70, 0.4);
+  }
+  .profile-badge {
+    display: inline-block;
+    background: rgba(230, 57, 70, 0.15);
+    color: #e63946;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(230, 57, 70, 0.3);
+    margin-top: 6px;
+  }
+  .input-label {
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 0.88rem;
+    margin-bottom: 8px;
+    display: block;
+    text-align: left;
+  }
+  .custom-input {
+    background: rgba(0, 0, 0, 0.7) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+    color: #fff !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+    font-size: 0.95rem;
+    transition: all 0.25s ease;
+    width: 100%;
+  }
+  .custom-input:focus {
+    border-color: #e63946 !important;
+    box-shadow: 0 0 12px rgba(230, 57, 70, 0.4) !important;
+    outline: none;
+  }
+  .readonly-email {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+    color: #cbd5e1 !important;
+    border-radius: 12px;
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn-update {
+    background: linear-gradient(135deg, #e63946 0%, #c1121f 100%);
+    color: #fff;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 28px;
+    width: 100%;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(230, 57, 70, 0.4);
+    cursor: pointer;
+    margin-top: 15px;
+  }
+  .btn-update:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(230, 57, 70, 0.6);
+  }
+  .action-links-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .link-pwd {
+    color: #60a5fa;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: color 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .link-pwd:hover {
+    color: #93c5fd;
+    text-decoration: none;
+  }
+  .link-del {
+    color: #f43f5e;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: color 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .link-del:hover {
+    color: #fda4af;
+    text-decoration: none;
+  }
+</style>
+
+<div class="profile-card">
+  {% for r in record %}
+  <div class="profile-header">
+    <div class="profile-avatar">
+      <i class="fas fa-user-shield"></i>
+    </div>
+    <h3 style="margin: 0; color: #fff; font-weight: 700;">{{r[0]}} {{r[1]}}</h3>
+    <span class="profile-badge">🩸 Verified Mystic Hunter</span>
+  </div>
+
+  <form action="/userProfile" method="post">
+    <div class="row text-start mb-3">
+      <div class="col-md-6 form-group mb-3 mb-md-0">
+        <label class="input-label">First Name</label>
+        <input type="text" name="firstName" value="{{r[0]}}" class="custom-input" placeholder="First Name" required>
+      </div>
+      <div class="col-md-6 form-group">
+        <label class="input-label">Last Name</label>
+        <input type="text" name="lastName" value="{{r[1]}}" class="custom-input" placeholder="Last Name" required>
+      </div>
+    </div>
+
+    <div class="form-group text-start mb-3">
+      <label class="input-label">Email Address (Immutable)</label>
+      <div class="readonly-email">
+        <i class="fas fa-envelope" style="color: #e63946;"></i>
+        <span>{{r[2]}}</span>
+      </div>
+    </div>
+
+    <div class="form-group text-start mb-4">
+      <label class="input-label">Mobile Contact</label>
+      <input type="text" name="mobile" value="{{r[3]}}" class="custom-input" placeholder="10 Digit Phone Number" required>
+    </div>
+
+    <button type="submit" class="btn-update">💾 Save Profile Details</button>
+  </form>
+
+  <!-- Hunter Progression Tier -->
+  <div style="margin-top: 30px; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(230, 57, 70, 0.2); border-radius: 16px; padding: 20px; text-align: left;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <span style="font-family: 'Cinzel', serif; font-weight: 700; color: #fff; font-size: 0.95rem;">
+        <i class="fas fa-medal" style="color: #e63946; margin-right: 6px;"></i> Hunter Rank Progression
+      </span>
+      <span style="font-size: 0.75rem; color: #fbbf24; font-weight: 700; text-transform: uppercase; background: rgba(251, 191, 36, 0.12); padding: 3px 10px; border-radius: 12px; border: 1px solid rgba(251, 191, 36, 0.3);">
+        Daylight Walker
+      </span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center;">
+      <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 4px;">
+        <div style="color: #94a3b8; font-size: 1.2rem; margin-bottom: 4px;">🥉</div>
+        <div style="font-size: 0.7rem; color: #94a3b8; font-weight: 600;">Fledgling</div>
+      </div>
+      <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 4px;">
+        <div style="color: #cbd5e1; font-size: 1.2rem; margin-bottom: 4px;">🥈</div>
+        <div style="font-size: 0.7rem; color: #cbd5e1; font-weight: 600;">Hunter</div>
+      </div>
+      <div style="background: rgba(230, 57, 70, 0.15); border: 1px solid #e63946; border-radius: 10px; padding: 10px 4px; box-shadow: 0 0 10px rgba(230, 57, 70, 0.3);">
+        <div style="color: #fbbf24; font-size: 1.2rem; margin-bottom: 4px;">🥇</div>
+        <div style="font-size: 0.7rem; color: #fff; font-weight: 700;">Daylight</div>
+      </div>
+      <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 4px;">
+        <div style="color: #e63946; font-size: 1.2rem; margin-bottom: 4px;">👑</div>
+        <div style="font-size: 0.7rem; color: #94a3b8; font-weight: 600;">Hybrid</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-links-row">
+    <a href="/userPassword" class="link-pwd">
+      <i class="fas fa-key"></i> Change Password
+    </a>
+    <a href="/userDelete" class="link-del" onclick="return confirm('⚠️ Are you sure you want to permanently delete your account?')">
+      <i class="fas fa-trash-alt"></i> Delete Account
+    </a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

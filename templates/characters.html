@@ -1,0 +1,2080 @@
+{% extends 'mainLayout.html' %}
+{% block content %}
+
+<!-- Custom Fonts & Scoped Character Showcase Styles -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Outfit:wght@300;400;500;600;700&family=Work+Sans:wght@200;300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300&display=swap');
+
+:root {
+  --tvd-blood: #8e0923;
+  --tvd-crimson: #c8102e;
+  --tvd-blood-glow: rgba(200, 16, 46, 0.45);
+  --tvd-charcoal: #0a0a0a;
+  --tvd-dark-bg: #000000;
+  --tvd-card-bg: rgba(10, 10, 10, 0.85);
+  --tvd-card-border: rgba(255, 255, 255, 0.09);
+  --tvd-card-border-hover: rgba(200, 16, 46, 0.65);
+  --tvd-text-light: #f5f5f7;
+  --tvd-text-muted: #a39b9e;
+  --tvd-font-cinzel: 'Cinzel', serif;
+  --tvd-font-outfit: 'Outfit', sans-serif;
+  --tvd-font-body: 'Work Sans', sans-serif;
+}
+
+/* Page Container */
+.tvd-characters-page {
+  position: relative;
+  min-height: calc(100vh - 60px);
+  background: var(--tvd-dark-bg);
+  color: var(--tvd-text-light);
+  overflow-x: hidden;
+  padding: 40px 0 70px;
+}
+
+/* 🎥 Background Video & Layers */
+.tvd-bg-video-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background: #000 url("{{ url_for('static', filename='img/salvatore_crypt_bg.jpg') }}") center center / cover no-repeat;
+}
+
+.tvd-bg-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(40%) brightness(32%) contrast(130%);
+  transform: scale(1.03);
+  opacity: 0.65;
+}
+
+.tvd-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(142, 9, 35, 0.18) 0%,
+    rgba(10, 3, 5, 0.68) 55%,
+    rgba(0, 0, 0, 0.96) 100%
+  );
+  z-index: 1;
+}
+
+.tvd-vignette {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.8) 0%,
+    transparent 20%,
+    transparent 80%,
+    rgba(0, 0, 0, 0.95) 100%
+  );
+  z-index: 2;
+}
+
+/* Faint Atmospheric Embers / Fog */
+.tvd-mist-layer {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 30%, rgba(142, 9, 35, 0.12), transparent 60%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* 🔥 Floating Ember Particles Canvas */
+#tvdEmbers {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* 🌫 Animated Fog Layers */
+.tvd-fog-layer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 200vw;
+  height: 35vh;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.18;
+}
+
+.tvd-fog-layer-1 {
+  background: url("{{ url_for('static', filename='img/fog2.jpg') }}") repeat-x;
+  background-size: contain;
+  animation: fogDrift 45s linear infinite;
+}
+
+.tvd-fog-layer-2 {
+  background: url("{{ url_for('static', filename='img/fog2.jpg') }}") repeat-x;
+  background-size: contain;
+  animation: fogDrift 70s linear infinite reverse;
+  opacity: 0.1;
+  bottom: -5vh;
+}
+
+@keyframes fogDrift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* 🧛 Main Content Wrapper */
+.tvd-showcase-container {
+  position: relative;
+  z-index: 5;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Header Section */
+.tvd-page-header {
+  text-align: center;
+  margin-bottom: 28px;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeSlideUp 0.7s 0.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.tvd-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--tvd-font-cinzel);
+  font-size: 0.78rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #ff9ca8;
+  padding: 5px 16px;
+  background: rgba(142, 9, 35, 0.18);
+  border: 1px solid rgba(200, 16, 46, 0.35);
+  border-radius: 999px;
+  margin-bottom: 14px;
+  backdrop-filter: blur(8px);
+}
+
+.tvd-badge i {
+  color: var(--tvd-crimson);
+  font-size: 0.7rem;
+}
+
+.tvd-main-title {
+  font-family: var(--tvd-font-cinzel);
+  font-size: clamp(2.2rem, 4.2vw, 3.6rem);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 30px rgba(142, 9, 35, 0.3);
+}
+
+.tvd-main-title span {
+  color: #ff334b;
+  background: linear-gradient(135deg, #ffffff 10%, #ff5268 60%, #a80018 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Blood-red pulsing divider line */
+.tvd-divider {
+  display: block;
+  width: 120px;
+  height: 1px;
+  margin: 0 auto 16px;
+  background: linear-gradient(90deg, transparent, var(--tvd-crimson), transparent);
+  animation: dividerPulse 3s ease-in-out infinite;
+}
+
+@keyframes dividerPulse {
+  0%, 100% { opacity: 0.4; width: 120px; }
+  50% { opacity: 1; width: 180px; }
+}
+
+.tvd-subtitle {
+  font-family: var(--tvd-font-body);
+  font-size: clamp(0.95rem, 1.4vw, 1.12rem);
+  font-weight: 300;
+  color: var(--tvd-text-muted);
+  max-width: 680px;
+  margin: 0 auto 22px;
+  line-height: 1.6;
+}
+
+.tvd-subtitle em {
+  color: #f1cbd2;
+  font-style: italic;
+}
+
+/* Category Filter Pills */
+.tvd-filter-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.tvd-filter-btn {
+  font-family: var(--tvd-font-outfit);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: #d1c7ca;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 6px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(6px);
+}
+
+.tvd-filter-btn:hover {
+  background: rgba(142, 9, 35, 0.25);
+  border-color: rgba(200, 16, 46, 0.5);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.tvd-filter-btn.active {
+  background: linear-gradient(135deg, #8e0923, #5a0314);
+  border-color: #ff334b;
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(142, 9, 35, 0.4);
+}
+
+/* ==========================================================================
+   CAROUSEL SHOWCASE SECTION
+   ========================================================================== */
+
+.tvd-carousel-shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(40px);
+  animation: fadeSlideUp 0.7s 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  perspective: 1200px;
+  padding: 10px 0 20px;
+}
+
+/* Left & Right Arrow Controls */
+.tvd-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(14, 7, 9, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tvd-carousel-arrow:hover {
+  background: rgba(142, 9, 35, 0.9);
+  border-color: #ff334b;
+  color: #ffffff;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 0 20px rgba(200, 16, 46, 0.6);
+}
+
+.tvd-carousel-arrow:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.tvd-carousel-arrow.arrow-prev {
+  left: -8px;
+}
+
+.tvd-carousel-arrow.arrow-next {
+  right: -8px;
+}
+
+.tvd-carousel-arrow.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* Horizontal Track */
+.tvd-carousel-track {
+  display: flex;
+  gap: 22px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  padding: 24px 20px;
+  margin: 0;
+  list-style: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+  user-select: none;
+  width: 100%;
+}
+
+.tvd-carousel-track:active {
+  cursor: grabbing;
+}
+
+.tvd-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* ==========================================================================
+   CHARACTER CARD (CINEMATIC & COMPACT PORTRAIT)
+   ========================================================================== */
+
+.tvd-card {
+  flex: 0 0 240px;
+  height: 380px;
+  scroll-snap-align: center;
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--tvd-card-bg);
+  border: 1px solid var(--tvd-card-border);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.4s ease,
+              box-shadow 0.4s ease,
+              filter 0.4s ease,
+              opacity 0.4s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+  cursor: pointer;
+}
+
+.tvd-card:hover {
+  border-color: var(--tvd-card-border-hover);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.8),
+              0 0 25px rgba(142, 9, 35, 0.4);
+}
+
+/* Neighbor dimming: when hovering the track, non-hovered cards dim */
+.tvd-carousel-track:hover .tvd-card:not(:hover) {
+  filter: brightness(0.6) saturate(0.7);
+  opacity: 0.75;
+}
+
+/* Staggered entrance animation for cards */
+.tvd-card.card-enter {
+  opacity: 0;
+  transform: translateY(50px) scale(0.92);
+}
+
+.tvd-card.card-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Ambient glow that follows mouse on card */
+.tvd-card-glow {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200, 16, 46, 0.35), transparent 70%);
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+}
+
+.tvd-card:hover .tvd-card-glow {
+  opacity: 1;
+}
+
+/* Card Image */
+.tvd-card-img-wrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.tvd-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  filter: grayscale(25%) brightness(82%) contrast(108%);
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
+              filter 0.6s ease;
+}
+
+.tvd-card:hover .tvd-card-img {
+  transform: scale(1.08);
+  filter: grayscale(0%) brightness(100%) contrast(105%);
+}
+
+/* Card Vignette / Gradient Overlay */
+.tvd-card-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 2, 4, 0.1) 0%,
+    rgba(5, 2, 4, 0.25) 45%,
+    rgba(14, 4, 8, 0.85) 75%,
+    rgba(8, 2, 4, 0.98) 100%
+  );
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.tvd-card:hover .tvd-card-gradient {
+  background: linear-gradient(
+    180deg,
+    rgba(5, 2, 4, 0.05) 0%,
+    rgba(20, 2, 8, 0.2) 40%,
+    rgba(18, 3, 9, 0.88) 72%,
+    rgba(10, 1, 4, 0.99) 100%
+  );
+}
+
+/* Card Species / Role Tag (Top Left) */
+.tvd-card-tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 3;
+  font-family: var(--tvd-font-outfit);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(10, 4, 6, 0.72);
+  color: #ffccd3;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.tvd-card:hover .tvd-card-tag {
+  background: rgba(142, 9, 35, 0.85);
+  border-color: #ff4760;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(200, 16, 46, 0.5);
+}
+
+/* Card Info / Name Inside Card */
+.tvd-card-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 18px 16px 16px;
+  z-index: 3;
+  text-align: left;
+  transform: translateY(0);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tvd-card-name {
+  font-family: var(--tvd-font-cinzel);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #ffffff;
+  margin: 0 0 4px;
+  line-height: 1.15;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  transition: color 0.3s ease;
+}
+
+.tvd-card:hover .tvd-card-name {
+  color: #ffcdd3;
+  text-shadow: 0 0 14px rgba(200, 16, 46, 0.6);
+}
+
+.tvd-card-alias {
+  font-family: var(--tvd-font-outfit);
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--tvd-text-muted);
+  margin: 0 0 8px;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+}
+
+/* Quote snippet on card */
+.tvd-card-quote {
+  font-family: var(--tvd-font-body);
+  font-size: 0.75rem;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.35;
+  margin: 0;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transform: translateY(6px);
+  transition: all 0.35s ease;
+}
+
+.tvd-card:hover .tvd-card-quote {
+  opacity: 1;
+  max-height: 48px;
+  transform: translateY(0);
+  margin-top: 6px;
+}
+
+/* Card Click CTA Pill */
+.tvd-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--tvd-font-outfit);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #ff8597;
+  margin-top: 6px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: all 0.3s ease;
+}
+
+.tvd-card:hover .tvd-card-cta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Carousel Scroll Indicator Dots / Progress */
+.tvd-carousel-nav-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.tvd-scroll-hint {
+  font-family: var(--tvd-font-outfit);
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.45);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tvd-scroll-hint i {
+  color: #ff4760;
+  animation: pulseArrow 1.8s infinite ease-in-out;
+}
+
+@keyframes pulseArrow {
+  0%, 100% { transform: translateX(0); opacity: 0.6; }
+  50% { transform: translateX(4px); opacity: 1; }
+}
+
+/* Scroll Progress Bar */
+.tvd-scroll-progress {
+  position: relative;
+  width: 200px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.tvd-scroll-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--tvd-crimson), #ff5268, var(--tvd-blood));
+  border-radius: 3px;
+  transition: width 0.15s ease-out;
+  box-shadow: 0 0 8px rgba(200, 16, 46, 0.6);
+}
+
+/* Keyboard focus ring for cards */
+.tvd-card:focus-visible {
+  outline: 2px solid #ff5268;
+  outline-offset: 4px;
+}
+
+/* Card entrance/exit keyframe */
+@keyframes fadeSlideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Lore strip entrance */
+.tvd-lore-strip {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeSlideUp 0.8s 2.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ==========================================================================
+   FEATURED SPOTLIGHT / LORE FOOTER STRIP
+   ========================================================================== */
+.tvd-lore-strip {
+  margin-top: 40px;
+  background: rgba(14, 5, 8, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 24px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.tvd-lore-content h4 {
+  font-family: var(--tvd-font-cinzel);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 6px;
+}
+
+.tvd-lore-content p {
+  font-family: var(--tvd-font-body);
+  font-size: 0.92rem;
+  color: var(--tvd-text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.tvd-lore-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.tvd-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--tvd-font-outfit);
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #8e0923, #5a0314);
+  color: #ffffff;
+  border: 1px solid #ff334b;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(142, 9, 35, 0.4);
+}
+
+.tvd-btn-primary:hover {
+  background: linear-gradient(135deg, #b80d30, #7a041c);
+  color: #ffffff;
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(200, 16, 46, 0.6);
+}
+
+.tvd-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--tvd-font-outfit);
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.tvd-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  text-decoration: none;
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   MODAL DIALOG (CINEMATIC CHARACTER DOSSIER)
+   ========================================================================== */
+.tvd-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.tvd-modal-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.tvd-modal-dialog {
+  position: relative;
+  background: linear-gradient(145deg, #16080c, #090305);
+  border: 1px solid rgba(200, 16, 46, 0.4);
+  border-radius: 22px;
+  max-width: 720px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(142, 9, 35, 0.35);
+  transform: scale(0.92) translateY(20px);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tvd-modal-backdrop.active .tvd-modal-dialog {
+  transform: scale(1) translateY(0);
+}
+
+.tvd-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  z-index: 10;
+  transition: all 0.25s ease;
+}
+
+.tvd-modal-close:hover {
+  background: var(--tvd-crimson);
+  transform: rotate(90deg);
+}
+
+.tvd-modal-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 400px;
+}
+
+.tvd-modal-visual {
+  position: relative;
+  height: 100%;
+  min-height: 380px;
+  overflow: hidden;
+  border-radius: 22px 0 0 22px;
+}
+
+.tvd-modal-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: contrast(105%) brightness(90%);
+}
+
+.tvd-modal-body {
+  padding: 32px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.tvd-modal-header {
+  margin-bottom: 16px;
+}
+
+.tvd-modal-badge {
+  display: inline-block;
+  font-family: var(--tvd-font-outfit);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #ff9ca8;
+  background: rgba(142, 9, 35, 0.28);
+  border: 1px solid rgba(200, 16, 46, 0.4);
+  padding: 4px 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.tvd-modal-name {
+  font-family: var(--tvd-font-cinzel);
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 6px;
+  line-height: 1.15;
+}
+
+.tvd-modal-role {
+  font-family: var(--tvd-font-outfit);
+  font-size: 0.88rem;
+  color: #ff5268;
+  font-weight: 500;
+}
+
+.tvd-modal-quote {
+  font-family: var(--tvd-font-cinzel);
+  font-size: 0.95rem;
+  font-style: italic;
+  color: #f1cbd2;
+  border-left: 3px solid var(--tvd-crimson);
+  padding-left: 14px;
+  margin: 14px 0 18px;
+  line-height: 1.5;
+}
+
+.tvd-modal-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.tvd-stat-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+
+.tvd-stat-label {
+  display: block;
+  font-family: var(--tvd-font-outfit);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--tvd-text-muted);
+  margin-bottom: 2px;
+}
+
+.tvd-stat-val {
+  font-family: var(--tvd-font-outfit);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.tvd-modal-bio {
+  font-family: var(--tvd-font-body);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: #cfc6c8;
+  margin: 0 0 20px;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN BREAKPOINTS
+   ========================================================================== */
+@media (max-width: 992px) {
+  .tvd-lore-strip {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .tvd-modal-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tvd-modal-visual {
+    height: 240px;
+    min-height: auto;
+    border-radius: 22px 22px 0 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .tvd-characters-page {
+    padding: 20px 0 50px;
+  }
+  
+  .tvd-carousel-arrow {
+    width: 42px;
+    height: 42px;
+    font-size: 1rem;
+  }
+  
+  .tvd-carousel-arrow.arrow-prev { left: 4px; }
+  .tvd-carousel-arrow.arrow-next { right: 4px; }
+  
+  .tvd-card {
+    flex: 0 0 210px;
+    height: 340px;
+  }
+  
+  .tvd-card-name {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tvd-card {
+    flex: 0 0 185px;
+    height: 310px;
+    border-radius: 14px;
+  }
+  
+  .tvd-card-info {
+    padding: 12px 10px 10px;
+  }
+  
+  .tvd-card-name {
+    font-size: 1rem;
+  }
+  
+  .tvd-card-alias {
+    font-size: 0.72rem;
+  }
+  
+  .tvd-carousel-track {
+    gap: 14px;
+    padding: 16px 10px;
+  }
+}
+
+/* ==========================================================================
+   FILTER COUNTS + VIEW TOGGLE + RESULT STATUS
+   ========================================================================== */
+.tvd-filter-btn .tvd-count {
+  opacity: 0.62;
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+.tvd-filter-btn.active .tvd-count { opacity: 0.85; }
+
+.tvd-view-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.tvd-view-toggle {
+  display: inline-flex;
+  padding: 4px;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+}
+
+.tvd-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--tvd-font-outfit);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: #d1c7ca;
+  background: transparent;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tvd-view-btn i { font-size: 0.82rem; }
+
+.tvd-view-btn:hover { color: #ffffff; }
+
+.tvd-view-btn.active {
+  background: linear-gradient(135deg, #8e0923, #5a0314);
+  color: #ffffff;
+  box-shadow: 0 3px 12px rgba(142, 9, 35, 0.4);
+}
+
+.tvd-result-status {
+  font-family: var(--tvd-font-outfit);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.tvd-result-status strong { color: #ff8597; font-weight: 600; }
+
+/* Empty state shown when a filter has no members */
+.tvd-empty-state {
+  display: none;
+  grid-column: 1 / -1;
+  width: 100%;
+  text-align: center;
+  padding: 60px 20px;
+  font-family: var(--tvd-font-body);
+  color: var(--tvd-text-muted);
+}
+
+.tvd-empty-state.show { display: block; }
+
+.tvd-empty-state i {
+  display: block;
+  color: var(--tvd-crimson);
+  font-size: 1.7rem;
+  margin-bottom: 12px;
+}
+
+/* ==========================================================================
+   GRID MODE — see every soul at once
+   ========================================================================== */
+.tvd-carousel-track.grid-mode {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 22px;
+  overflow: visible;
+  cursor: default;
+  scroll-snap-type: none;
+  padding: 24px 6px;
+}
+
+.tvd-carousel-track.grid-mode .tvd-card {
+  flex: initial;
+  width: 100%;
+  height: 360px;
+  scroll-snap-align: none;
+}
+
+.tvd-carousel-shell.grid-active .tvd-carousel-arrow { display: none; }
+
+.tvd-carousel-nav-status.grid-active .tvd-scroll-progress,
+.tvd-carousel-nav-status.grid-active .tvd-scroll-hint { display: none; }
+
+/* Visible keyboard focus for every interactive control */
+.tvd-filter-btn:focus-visible,
+.tvd-view-btn:focus-visible,
+.tvd-carousel-arrow:focus-visible,
+.tvd-modal-close:focus-visible,
+.tvd-btn-primary:focus-visible,
+.tvd-btn-ghost:focus-visible {
+  outline: 2px solid #ff5268;
+  outline-offset: 3px;
+}
+
+/* Subtle hover on modal stat tiles */
+.tvd-stat-item {
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.tvd-stat-item:hover {
+  border-color: rgba(200, 16, 46, 0.4);
+  background: rgba(142, 9, 35, 0.12);
+}
+
+/* Touch devices have no hover — reveal each card's quote + CTA so they are usable */
+@media (hover: none) {
+  .tvd-card-quote {
+    opacity: 1;
+    max-height: 48px;
+    transform: none;
+    margin-top: 6px;
+  }
+  .tvd-card-cta { opacity: 1; transform: none; }
+}
+
+/* ==========================================================================
+   REDUCED MOTION — calm the atmosphere for users who ask for it
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .tvd-page-header,
+  .tvd-carousel-shell,
+  .tvd-lore-strip {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .tvd-divider,
+  .tvd-fog-layer-1,
+  .tvd-fog-layer-2,
+  .tvd-scroll-hint i { animation: none; }
+  .tvd-card,
+  .tvd-card.card-enter { opacity: 1 !important; transform: none !important; }
+  .tvd-card:hover .tvd-card-img { transform: none; }
+  .tvd-card-glow { display: none; }
+}
+</style>
+
+<!-- Character Page Structure -->
+
+
+<div class="tvd-characters-page">
+  
+  <!-- 🎥 Atmospheric Background Video & Overlays -->
+  <div class="tvd-bg-video-wrapper">
+    <video autoplay muted loop playsinline class="tvd-bg-video" poster="{{ url_for('static', filename='img/salvatore_crypt_bg.jpg') }}">
+      <source src="{{ url_for('static', filename='video/Untitled video - Made with Clipchamp.mp4') }}" type="video/mp4">
+      <source src="{{ url_for('static', filename='video/7a9bcc1ebadfbc4c561b60e51d2c8e6a.mp4') }}" type="video/mp4">
+    </video>
+    <div class="tvd-bg-overlay"></div>
+    <div class="tvd-vignette"></div>
+    <div class="tvd-mist-layer"></div>
+  </div>
+
+  <!-- 🔥 Floating Ember Particles -->
+  <canvas id="tvdEmbers"></canvas>
+
+  <!-- 🌫 Animated Fog Layers -->
+  <div class="tvd-fog-layer tvd-fog-layer-1"></div>
+  <div class="tvd-fog-layer tvd-fog-layer-2"></div>
+
+  <div class="tvd-showcase-container">
+    
+    <!-- 🩸 Header Section -->
+    <header class="tvd-page-header">
+      <div class="tvd-badge">
+        <i class="fas fa-tint"></i> Mystic Falls Immortals & Allies <i class="fas fa-tint"></i>
+      </div>
+      <h1 class="tvd-main-title">
+        ⚜ The Legends of <span>Mystic Falls</span> ⚜
+      </h1>
+      <span class="tvd-divider"></span>
+      <p class="tvd-subtitle">
+        <em>"Death does not stop us. It merely sets us free."</em><br>
+        Explore the immortal bloodlines, formidable witches, and fearless protectors who shaped the supernatural legacy.
+      </p>
+
+      <!-- Category Filter Pills (counts injected by JS) -->
+      <div class="tvd-filter-nav" id="filterNav">
+        <button class="tvd-filter-btn active" data-filter="all" data-label="All Souls">All Souls</button>
+        <button class="tvd-filter-btn" data-filter="vampires" data-label="Vampires">Vampires</button>
+        <button class="tvd-filter-btn" data-filter="originals" data-label="The Originals">The Originals</button>
+        <button class="tvd-filter-btn" data-filter="witches" data-label="Witches">Witches</button>
+        <button class="tvd-filter-btn" data-filter="hunters" data-label="Hunters &amp; Werewolves">Hunters &amp; Werewolves</button>
+      </div>
+
+      <!-- Layout toggle (carousel / grid) + live result count -->
+      <div class="tvd-view-controls">
+        <div class="tvd-view-toggle" role="group" aria-label="Choose layout">
+          <button class="tvd-view-btn active" data-view="carousel" aria-pressed="true">
+            <i class="fas fa-film"></i> Carousel
+          </button>
+          <button class="tvd-view-btn" data-view="grid" aria-pressed="false">
+            <i class="fas fa-th-large"></i> Grid
+          </button>
+        </div>
+        <span class="tvd-result-status" id="resultStatus" aria-live="polite"></span>
+      </div>
+    </header>
+
+    <!-- ⚜ Horizontal Character Carousel -->
+    <section class="tvd-carousel-shell" aria-label="Character Carousel">
+      
+      <!-- Left Navigation Arrow -->
+      <button class="tvd-carousel-arrow arrow-prev" id="carouselPrev" aria-label="Scroll characters left">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+
+      <!-- Carousel Track -->
+      <div class="tvd-carousel-track" id="tvdCarouselTrack">
+        
+        <!-- 1. DAMON SALVATORE -->
+        <article class="tvd-card" data-category="vampires"
+                 data-id="damon"
+                 data-name="Damon Salvatore"
+                 data-role="The Dangerous Brother"
+                 data-species="Vampire (Turned 1864)"
+                 data-origin="Mystic Falls, Virginia"
+                 data-status="Immortal / Cured"
+                 data-quote="&ldquo;Hello, Brother.&rdquo;"
+                 data-bio="Charismatic, impulsive, and dangerously unpredictable. Behind his snarky exterior lies a fiercely loyal protector who would burn the entire world to keep Elena and Stefan safe."
+                 data-img="{{ url_for('static', filename='img/Untitled design (13).png') }}">
+          <div class="tvd-card-img-wrap">
+            <img src="{{ url_for('static', filename='img/Untitled design (13).png') }}" 
+                 alt="Damon Salvatore" 
+                 class="tvd-card-img"
+                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/damon.jpg') }}';">
+          </div>
+          <div class="tvd-card-gradient"></div>
+          <span class="tvd-card-tag">Vampire</span>
+          <div class="tvd-card-info">
+            <h3 class="tvd-card-name">Damon Salvatore</h3>
+            <p class="tvd-card-alias">The Anti-Hero • Salvatore Brother</p>
+            <p class="tvd-card-quote">"Hello, Brother."</p>
+            <span class="tvd-card-cta">View Dossier <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </article>
+
+        <!-- 2. STEFAN SALVATORE -->
+        <article class="tvd-card" data-category="vampires"
+                 data-id="stefan"
+                 data-name="Stefan Salvatore"
+                 data-role="The Ripper of Monterey"
+                 data-species="Vampire / Doppelgänger"
+                 data-origin="Mystic Falls, Virginia"
+                 data-status="Deceased (Heroic Sacrifice)"
+                 data-quote="&ldquo;I promise you, I will never hurt you.&rdquo;"
+                 data-bio="The compassionate brother who spent decades fighting his insatiable bloodlust. His humanity, devotion, and tragic self-sacrifice anchor the emotional core of Mystic Falls."
+                 data-img="{{ url_for('static', filename='img/Untitled design (11).png') }}">
+          <div class="tvd-card-img-wrap">
+            <img src="{{ url_for('static', filename='img/Untitled design (11).png') }}" 
+                 alt="Stefan Salvatore" 
+                 class="tvd-card-img"
+                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/stefan.jpg') }}';">
+          </div>
+          <div class="tvd-card-gradient"></div>
+          <span class="tvd-card-tag">Vampire</span>
+          <div class="tvd-card-info">
+            <h3 class="tvd-card-name">Stefan Salvatore</h3>
+            <p class="tvd-card-alias">The Ripper • Silas Doppelgänger</p>
+            <p class="tvd-card-quote">"I will always love you."</p>
+            <span class="tvd-card-cta">View Dossier <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </article>
+
+        <!-- 3. ELENA GILBERT -->
+        <article class="tvd-card" data-category="vampires"
+                 data-id="elena"
+                 data-name="Elena Gilbert"
+                 data-role="The Petrova Doppelgänger"
+                 data-species="Human / Vampire (Cured)"
+                 data-origin="Mystic Falls, Virginia"
+                 data-status="Human (Doctor)"
+                 data-quote="&ldquo;You want a love that consumes you.&rdquo;"
+                 data-bio="Compassionate, resilient, and morally grounded. Elena's life is forever transformed when she enters the supernatural world, becoming the heart of an epic immortal love story."
+                 data-img="{{ url_for('static', filename='img/Untitled design (14).png') }}">
+          <div class="tvd-card-img-wrap">
+            <img src="{{ url_for('static', filename='img/Untitled design (14).png') }}" 
+                 alt="Elena Gilbert" 
+                 class="tvd-card-img"
+                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/elena.jpg') }}';">
+          </div>
+          <div class="tvd-card-gradient"></div>
+          <span class="tvd-card-tag">Doppelgänger</span>
+          <div class="tvd-card-info">
+            <h3 class="tvd-card-name">Elena Gilbert</h3>
+            <p class="tvd-card-alias">Petrova Line • The Heart</p>
+            <p class="tvd-card-quote">"A love that consumes you."</p>
+            <span class="tvd-card-cta">View Dossier <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </article>
+
+        <!-- 4. KATHERINE PIERCE -->
+        <article class="tvd-card" data-category="vampires"
+                 data-id="katherine"
+                 data-name="Katherine Pierce"
+                 data-role="Katerina Petrova"
+                 data-species="500-Year Vampire / Queen of Hell"
+                 data-origin="Bulgaria (1473)"
+                 data-status="Deceased"
+                 data-quote="&ldquo;It's okay to love them both. I did.&rdquo;"
+                 data-bio="The ultimate survivor. Ruthless, cunning, and masterfully manipulative, Katherine spent five centuries outrunning Klaus Mikaelson before conquering hell itself."
+                 data-img="{{ url_for('static', filename='img/Untitled design (17).png') }}">
+          <div class="tvd-card-img-wrap">
+            <img src="{{ url_for('static', filename='img/Untitled design (17).png') }}" 
+                 alt="Katherine Pierce" 
+                 class="tvd-card-img"
+                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/katherine.jpg') }}';">
+          </div>
+          <div class="tvd-card-gradient"></div>
+          <span class="tvd-card-tag">Vampire</span>
+          <div class="tvd-card-info">
+            <h3 class="tvd-card-name">Katherine Pierce</h3>
+            <p class="tvd-card-alias">The Survivor • Petrova Doppelgänger</p>
+            <p class="tvd-card-quote">"It's always been me."</p>
+            <span class="tvd-card-cta">View Dossier <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </article>
+
+        <!-- 5. KLAUS MIKAELSON -->
+        <article class="tvd-card" data-category="originals"
+                 data-id="klaus"
+                 data-name="Klaus Mikaelson"
+                 data-role="The Original Hybrid"
+                 data-species="Original Vampire-Werewolf Hybrid"
+                 data-origin="Mystic Falls / New Orleans"
+                 data-status="Deceased (Redemption)"
+                 data-quote="&ldquo;I am the hybrid. I cannot be killed.&rdquo;"
+                 data-bio="The most feared immortal in history. Klaus wields ruthless power and tactical genius, yet harbours an intense artistic soul and an unyielding desire to protect his family."
+                 data-img="{{ url_for('static', filename='img/klaus.jpg') }}">
+          <div class="tvd-card-img-wrap">
+            <img src="{{ url_for('static', filename='img/klaus.jpg') }}" 
+                 alt="Klaus Mikaelson" 
+                 class="tvd-card-img"
+                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/klaus.jpg') }}';">
+          </div>
+          <div class="tvd-card-gradient"></div>
+          <span class="tvd-card-tag">Original Hybrid</span>
+          <div class="tvd-card-info">
+            <h3 class="tvd-card-name">Klaus Mikaelson</h3>
+            <p class="tvd-card-alias">The Original Hybrid • Mikaelson King</p>
+            <p class="tvd-card-quote">"He's your first love. I intend to be your last."</p>
+            <span class="tvd-card-cta">View Dossier <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </article>
+
+        <!-- 6. CAROLINE FORBES -->
+        <article class="tvd-card" data-category="vampires"
+                 data-id="caroline"
+                 data-name="Caroline Forbes"
+                 data-role="Headmistress & Vampire Leader"
+                 data-species="Vampire (Turned 2010)"
+                 data-origin="Mystic Falls, Virginia"
+                 data-status="Immortal"
+                 data-quote="&ldquo;I'm not human. And I miss it.&rdquo;"
+                 data-bio="Flourishing into her ultimate self upon turning into a vampire, Caroline's impeccable self-control, fierce loyalty, and infectious brightness make her one of the greatest heroes of Mystic Falls."
+                 data-img="{{ url_for('static', filename='img/Untitled design (15).png') }}">
+          <div class="tvd-card-img-wrap">
+            <img src="{{ url_for('static', filename='img/Untitled design (15).png') }}" 
+                 alt="Caroline Forbes" 
+                 class="tvd-card-img"
+                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/caroline.jpg') }}';">
+          </div>
+          <div class="tvd-card-gradient"></div>
+          <span class="tvd-card-tag">Vampire</span>
+          <div class="tvd-card-info">
+            <h3 class="tvd-card-name">Caroline Forbes</h3>
+            <p class="tvd-card-alias">The Fierce • Salvatore School Leader</p>
+            <p class="tvd-card-quote">"I am a good vampire!"</p>
+            <span class="tvd-card-cta">View Dossier <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </article>
+
+        <!-- 7. BONNIE BENNETT -->
+        <article class="tvd-card" data-category="witches"
+                 data-id="bonnie"
+                 data-name="Bonnie Bennett"
+                 data-role="The Bennett Witch"
+                 data-species="Witch / Psychic / Anchor"
+                 data-origin="Mystic Falls, Virginia"
+                 data-status="Living (Powerful Sorceress)"
+                 data-quote="&ldquo;We choose our own path. Our values and our actions.&rdquo;"
+                 data-bio="The mystical powerhouse of the group. Descendant of Qetsiyah, Bonnie repeatedly makes profound sacrifices to save her friends and uphold supernatural balance."
+                 data-img="{{ url_for('static', filename='img/Untitled design (16).png') }}">
+          <div class="tvd-card-img-wrap">
+            <img src="{{ url_for('static', filename='img/Untitled design (16).png') }}" 
+                 alt="Bonnie Bennett" 
+                 class="tvd-card-img"
+                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/bonnie.jpg') }}';">
+          </div>
+          <div class="tvd-card-gradient"></div>
+          <span class="tvd-card-tag">Bennett Witch</span>
+          <div class="tvd-card-info">
+            <h3 class="tvd-card-name">Bonnie Bennett</h3>
+            <p class="tvd-card-alias">The Anchor • Supreme Witch</p>
+            <p class="tvd-card-quote">"I'm done being everyone's sacrifice."</p>
+            <span class="tvd-card-cta">View Dossier <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </article>
+
+        <!-- 8. ELIJAH MIKAELSON -->
+        <article class="tvd-card" data-category="originals"
+                 data-id="elijah"
+                 data-name="Elijah Mikaelson"
+                 data-role="The Noble Original"
+                 data-species="Original Vampire"
+                 data-origin="Kingdom of Norway (10th Century)"
+                 data-status="Deceased (Redemption)"
+                 data-quote="&ldquo;I believe that when you love someone, you stand by them.&rdquo;"
+                 data-bio="Distinguished, gentlemanly, and unfathomably deadly. Elijah values his word of honor above all else and dedicated a thousand years to the redemption of his brother Klaus."
+                 data-img="{{ url_for('static', filename='img/elijah.jpg') }}">
+          <div class="tvd-card-img-wrap">
+            <img src="{{ url_for('static', filename='img/elijah.jpg') }}" 
+                 alt="Elijah Mikaelson" 
+                 class="tvd-card-img"
+                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/elijah.jpg') }}';">
+          </div>
+          <div class="tvd-card-gradient"></div>
+          <span class="tvd-card-tag">Original</span>
+          <div class="tvd-card-info">
+            <h3 class="tvd-card-name">Elijah Mikaelson</h3>
+            <p class="tvd-card-alias">The Noble Brother • Mikaelson Honor</p>
+            <p class="tvd-card-quote">"Always and forever."</p>
+            <span class="tvd-card-cta">View Dossier <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </article>
+
+        <!-- 9. REBEKAH MIKAELSON -->
+        <article class="tvd-card" data-category="originals"
+                 data-id="rebekah"
+                 data-name="Rebekah Mikaelson"
+                 data-role="The Original Sister"
+                 data-species="Original Vampire"
+                 data-origin="Kingdom of Norway (10th Century)"
+                 data-status="Immortal (Promised Cure)"
+                 data-quote="&ldquo;Us mortals are cursed by our feelings.&rdquo;"
+                 data-bio="Fierce, passionate, and deeply romantic. Despite a millennium of vampiric immortality, Rebekah's ultimate dream is the simple beauty of humanity and true love."
+                 data-img="{{ url_for('static', filename='img/rebekah.jpg') }}">
+          <div class="tvd-card-img-wrap">
+            <img src="{{ url_for('static', filename='img/rebekah.jpg') }}" 
+                 alt="Rebekah Mikaelson" 
+                 class="tvd-card-img"
+                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/rebekah.jpg') }}';">
+          </div>
+          <div class="tvd-card-gradient"></div>
+          <span class="tvd-card-tag">Original</span>
+          <div class="tvd-card-info">
+            <h3 class="tvd-card-name">Rebekah Mikaelson</h3>
+            <p class="tvd-card-alias">The Original Sister • Romantic Warrior</p>
+            <p class="tvd-card-quote">"I just want to be human."</p>
+            <span class="tvd-card-cta">View Dossier <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </article>
+
+        <!-- 10. ALARIC SALTZMAN -->
+        <article class="tvd-card" data-category="hunters"
+                 data-id="alaric"
+                 data-name="Alaric Saltzman"
+                 data-role="Vampire Hunter & Mentor"
+                 data-species="Human / Enhanced Original"
+                 data-origin="Mystic Falls, Virginia"
+                 data-status="Human (Headmaster)"
+                 data-quote="&ldquo;You're the hunter, Ric. Act like it.&rdquo;"
+                 data-bio="History teacher turned relentless vampire hunter. Damon's drinking buddy and surrogate father to Elena and Jeremy, Alaric later co-founds the Salvatore Boarding School."
+                 data-img="{{ url_for('static', filename='img/alaric.jpg') }}">
+          <div class="tvd-card-img-wrap">
+            <img src="{{ url_for('static', filename='img/alaric.jpg') }}" 
+                 alt="Alaric Saltzman" 
+                 class="tvd-card-img"
+                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/alaric.jpg') }}';">
+          </div>
+          <div class="tvd-card-gradient"></div>
+          <span class="tvd-card-tag">Hunter</span>
+          <div class="tvd-card-info">
+            <h3 class="tvd-card-name">Alaric Saltzman</h3>
+            <p class="tvd-card-alias">The Hunter • Headmaster</p>
+            <p class="tvd-card-quote">"I don't miss being a vampire."</p>
+            <span class="tvd-card-cta">View Dossier <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </article>
+
+        <!-- 11. TYLER LOCKWOOD -->
+        <article class="tvd-card" data-category="hunters"
+                 data-id="tyler"
+                 data-name="Tyler Lockwood"
+                 data-role="The Alpha Hybrid"
+                 data-species="Werewolf / Sired Hybrid"
+                 data-origin="Mystic Falls, Virginia"
+                 data-status="Deceased"
+                 data-quote="&ldquo;I have a choice. I broke the sire bond.&rdquo;"
+                 data-bio="Heir to the founding Lockwood family. After triggering his werewolf curse, Tyler became Klaus's first successful hybrid before leading a rebellion to break the sire bond."
+                 data-img="{{ url_for('static', filename='img/tyler.jpg') }}">
+          <div class="tvd-card-img-wrap">
+            <img src="{{ url_for('static', filename='img/tyler.jpg') }}" 
+                 alt="Tyler Lockwood" 
+                 class="tvd-card-img"
+                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/tyler.jpg') }}';">
+          </div>
+          <div class="tvd-card-gradient"></div>
+          <span class="tvd-card-tag">Werewolf / Hybrid</span>
+          <div class="tvd-card-info">
+            <h3 class="tvd-card-name">Tyler Lockwood</h3>
+            <p class="tvd-card-alias">Lockwood Bloodline • Hybrid Rebel</p>
+            <p class="tvd-card-quote">"I broke the sire bond."</p>
+            <span class="tvd-card-cta">View Dossier <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </article>
+
+        <!-- 12. JEREMY GILBERT -->
+        <article class="tvd-card" data-category="hunters"
+                 data-id="jeremy"
+                 data-name="Jeremy Gilbert"
+                 data-role="The Brotherhood of the Five"
+                 data-species="Supernatural Hunter / Medium"
+                 data-origin="Mystic Falls, Virginia"
+                 data-status="Living"
+                 data-quote="&ldquo;I can see ghosts. And I can kill vampires.&rdquo;"
+                 data-bio="Elena's younger brother whose connection to the spiritual realm awakens his destiny as one of 'The Five'—an elite order of supernatural vampire hunters."
+                 data-img="{{ url_for('static', filename='img/jeremy.jpg') }}">
+          <div class="tvd-card-img-wrap">
+            <img src="{{ url_for('static', filename='img/jeremy.jpg') }}" 
+                 alt="Jeremy Gilbert" 
+                 class="tvd-card-img"
+                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/jeremy.jpg') }}';">
+          </div>
+          <div class="tvd-card-gradient"></div>
+          <span class="tvd-card-tag">The Five Hunter</span>
+          <div class="tvd-card-info">
+            <h3 class="tvd-card-name">Jeremy Gilbert</h3>
+            <p class="tvd-card-alias">The Brotherhood of Five • Ghost Medium</p>
+            <p class="tvd-card-quote">"I am a hunter now."</p>
+            <span class="tvd-card-cta">View Dossier <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </article>
+
+        <!-- Empty state (shown when a filter yields no souls) -->
+        <div class="tvd-empty-state" id="tvdEmptyState">
+          <i class="fas fa-ghost"></i>
+          No souls in this bloodline yet.
+        </div>
+
+      </div>
+
+      <!-- Right Navigation Arrow -->
+      <button class="tvd-carousel-arrow arrow-next" id="carouselNext" aria-label="Scroll characters right">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+
+    </section>
+
+    <!-- Carousel Footer Status & Scroll Progress -->
+    <div class="tvd-carousel-nav-status">
+      <div class="tvd-scroll-progress">
+        <div class="tvd-scroll-progress-fill" id="scrollProgressFill"></div>
+      </div>
+      <span class="tvd-scroll-hint">
+        <i class="fas fa-arrows-alt-h"></i> Drag or use ← → keys to explore • Click a card for dossier
+      </span>
+    </div>
+
+
+    <!-- 🩸 Lore Banner & Trivia Callout -->
+    <aside class="tvd-lore-strip">
+      <div class="tvd-lore-content">
+        <h4>🩸 Think You Know Every Bloodline?</h4>
+        <p>From the first Petrova Doppelgänger in Ancient Greece to the founding families of 1864, test your knowledge in the ultimate Mystic Falls Trivia arena.</p>
+      </div>
+      <div class="tvd-lore-actions">
+        <a href="/userPlayQuiz" class="tvd-btn-primary"><i class="fas fa-play"></i> Play TVD Trivia</a>
+        <a href="/about" class="tvd-btn-ghost"><i class="fas fa-book-dead"></i> Read Lore</a>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<!-- 🧛 Character Dossier Modal Dialog -->
+<div class="tvd-modal-backdrop" id="characterModal" aria-hidden="true">
+  <div class="tvd-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalName">
+    <button class="tvd-modal-close" id="modalClose" aria-label="Close dossier">✕</button>
+    <div class="tvd-modal-grid">
+      <div class="tvd-modal-visual">
+        <img src="" alt="Character Portrait" class="tvd-modal-img" id="modalImg">
+      </div>
+      <div class="tvd-modal-body">
+        <div class="tvd-modal-header">
+          <span class="tvd-modal-badge" id="modalBadge">Vampire</span>
+          <h2 class="tvd-modal-name" id="modalName">Character Name</h2>
+          <div class="tvd-modal-role" id="modalRole">The Role / Alias</div>
+          <div class="tvd-modal-quote" id="modalQuote">"Character Quote"</div>
+        </div>
+        
+        <div class="tvd-modal-stats">
+          <div class="tvd-stat-item">
+            <span class="tvd-stat-label">Species & Lineage</span>
+            <span class="tvd-stat-val" id="modalSpecies">Vampire</span>
+          </div>
+          <div class="tvd-stat-item">
+            <span class="tvd-stat-label">Origin</span>
+            <span class="tvd-stat-val" id="modalOrigin">Mystic Falls</span>
+          </div>
+          <div class="tvd-stat-item">
+            <span class="tvd-stat-label">Status</span>
+            <span class="tvd-stat-val" id="modalStatus">Immortal</span>
+          </div>
+          <div class="tvd-stat-item">
+            <span class="tvd-stat-label">Faction</span>
+            <span class="tvd-stat-val" id="modalFaction">Salvatore Coven</span>
+          </div>
+        </div>
+
+        <p class="tvd-modal-bio" id="modalBio">Character description...</p>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+          <a href="/userPlayQuiz" class="tvd-btn-primary" style="padding: 8px 18px; font-size: 0.8rem;">
+            <i class="fas fa-fire"></i> Quiz On Character
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lightweight Carousel & Modal Controller -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const track = document.getElementById('tvdCarouselTrack');
+  const btnPrev = document.getElementById('carouselPrev');
+  const btnNext = document.getElementById('carouselNext');
+  const cards = document.querySelectorAll('.tvd-card');
+  const filterBtns = document.querySelectorAll('.tvd-filter-btn');
+  const progressFill = document.getElementById('scrollProgressFill');
+
+  // Modal Elements
+  const modal = document.getElementById('characterModal');
+  const modalClose = document.getElementById('modalClose');
+  const modalImg = document.getElementById('modalImg');
+  const modalBadge = document.getElementById('modalBadge');
+  const modalName = document.getElementById('modalName');
+  const modalRole = document.getElementById('modalRole');
+  const modalQuote = document.getElementById('modalQuote');
+  const modalSpecies = document.getElementById('modalSpecies');
+  const modalOrigin = document.getElementById('modalOrigin');
+  const modalStatus = document.getElementById('modalStatus');
+  const modalBio = document.getElementById('modalBio');
+  const modalFaction = document.getElementById('modalFaction');
+
+  // View toggle, live status, atmosphere preference
+  const viewBtns = document.querySelectorAll('.tvd-view-btn');
+  const resultStatus = document.getElementById('resultStatus');
+  const emptyState = document.getElementById('tvdEmptyState');
+  const shell = document.querySelector('.tvd-carousel-shell');
+  const navStatus = document.querySelector('.tvd-carousel-nav-status');
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let isGrid = false;
+  let lastFocused = null;
+
+  // Each character's allegiance (drives the "Faction" stat in the dossier)
+  const FACTIONS = {
+    damon: 'Salvatore Circle',
+    stefan: 'Salvatore Circle',
+    elena: 'Mystic Falls Gang',
+    katherine: 'Petrova Bloodline',
+    klaus: 'The Mikaelsons',
+    caroline: 'Salvatore School',
+    bonnie: 'Bennett Coven',
+    elijah: 'The Mikaelsons',
+    rebekah: 'The Mikaelsons',
+    alaric: 'The Brotherhood of the Five',
+    tyler: 'Lockwood Pack',
+    jeremy: 'The Brotherhood of the Five'
+  };
+
+
+
+  /* ============================================================
+     1. STAGGERED CARD ENTRANCE ANIMATION
+     ============================================================ */
+  cards.forEach((card, i) => {
+    card.classList.add('card-enter');
+    card.setAttribute('tabindex', '0'); // keyboard focusable
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', 'View dossier for ' + (card.dataset.name || 'character'));
+    // Inject ambient glow element into each card
+    const glow = document.createElement('div');
+    glow.className = 'tvd-card-glow';
+    card.appendChild(glow);
+  });
+
+  const revealCards = () => {
+    cards.forEach(card => {
+      card.classList.remove('card-enter');
+      card.classList.add('card-visible');
+    });
+  };
+
+  if (prefersReducedMotion) {
+    // Reveal immediately — never withhold content behind motion
+    revealCards();
+  } else {
+    // Stagger the entrance after curtain lifts
+    setTimeout(() => {
+      cards.forEach((card, i) => {
+        setTimeout(() => {
+          card.style.transition = `opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1), filter 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease`;
+          card.classList.remove('card-enter');
+          card.classList.add('card-visible');
+        }, i * 100);
+      });
+    }, 1700);
+  }
+
+  /* ============================================================
+     FILTER COUNTS + LIVE RESULT STATUS
+     ============================================================ */
+  const countFor = (filter) =>
+    filter === 'all'
+      ? cards.length
+      : [...cards].filter(c => c.getAttribute('data-category') === filter).length;
+
+  // Write the per-category count into each filter pill
+  filterBtns.forEach(btn => {
+    const label = btn.dataset.label || btn.textContent.trim();
+    btn.innerHTML = label + ' <span class="tvd-count">(' + countFor(btn.dataset.filter) + ')</span>';
+  });
+
+  const setStatus = (n) => {
+    if (resultStatus) {
+      resultStatus.innerHTML = 'Showing <strong>' + n + '</strong> of ' + cards.length + ' souls';
+    }
+    if (emptyState) emptyState.classList.toggle('show', n === 0);
+  };
+  setStatus(cards.length);
+
+  /* ============================================================
+     2. CAROUSEL SCROLL CONTROLS + PROGRESS BAR
+     ============================================================ */
+  const scrollDistance = () => {
+    const card = track.querySelector('.tvd-card:not([style*="display: none"])');
+    return card ? card.offsetWidth + 22 : 260;
+  };
+
+  const updateArrowState = () => {
+    if (!track || isGrid) return;
+    const maxScroll = track.scrollWidth - track.clientWidth;
+    btnPrev.classList.toggle('disabled', track.scrollLeft <= 5);
+    btnNext.classList.toggle('disabled', track.scrollLeft >= maxScroll - 5);
+  };
+
+  const updateProgressBar = () => {
+    if (!track || !progressFill || isGrid) return;
+    const maxScroll = track.scrollWidth - track.clientWidth;
+    const pct = maxScroll > 0 ? (track.scrollLeft / maxScroll) * 100 : 0;
+    progressFill.style.width = Math.min(100, Math.max(0, pct)) + '%';
+  };
+
+  btnPrev.addEventListener('click', () => {
+    track.scrollBy({ left: -scrollDistance() * 1.5, behavior: 'smooth' });
+  });
+
+  btnNext.addEventListener('click', () => {
+    track.scrollBy({ left: scrollDistance() * 1.5, behavior: 'smooth' });
+  });
+
+  track.addEventListener('scroll', () => {
+    updateArrowState();
+    updateProgressBar();
+  }, { passive: true });
+  window.addEventListener('resize', () => {
+    updateArrowState();
+    updateProgressBar();
+  }, { passive: true });
+  updateArrowState();
+  updateProgressBar();
+
+  /* ============================================================
+     GRID / CAROUSEL VIEW TOGGLE
+     ============================================================ */
+  const applyView = (view) => {
+    isGrid = view === 'grid';
+    track.classList.toggle('grid-mode', isGrid);
+    if (shell) shell.classList.toggle('grid-active', isGrid);
+    if (navStatus) navStatus.classList.toggle('grid-active', isGrid);
+    viewBtns.forEach(b => {
+      const on = b.dataset.view === view;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    if (!isGrid) {
+      track.scrollLeft = 0;
+      updateArrowState();
+      updateProgressBar();
+    }
+    try { localStorage.setItem('tvdCharView', view); } catch (e) {}
+  };
+
+  viewBtns.forEach(btn => {
+    btn.addEventListener('click', () => applyView(btn.dataset.view));
+  });
+
+  // Restore any saved layout preference (carousel is the default)
+  let savedView = 'carousel';
+  try { savedView = localStorage.getItem('tvdCharView') || 'carousel'; } catch (e) {}
+  if (savedView === 'grid') applyView('grid');
+
+  /* ============================================================
+     3. MOUSE DRAG-TO-SCROLL (DESKTOP)
+     ============================================================ */
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+  let hasDragged = false;
+
+  track.addEventListener('mousedown', (e) => {
+    if (isGrid) return;
+    isDown = true;
+    hasDragged = false;
+    startX = e.pageX - track.offsetLeft;
+    scrollLeft = track.scrollLeft;
+  });
+
+  track.addEventListener('mouseleave', () => { isDown = false; });
+  track.addEventListener('mouseup', () => { isDown = false; });
+
+  track.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - track.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    if (Math.abs(walk) > 6) hasDragged = true;
+    track.scrollLeft = scrollLeft - walk;
+  });
+
+  /* ============================================================
+     4. 3D TILT EFFECT ON CARDS (MOUSE PARALLAX)
+     ============================================================ */
+  if (!prefersReducedMotion) {
+    cards.forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        if (isDown) return; // Don't tilt while dragging
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateY = ((x - centerX) / centerX) * 8;
+        const rotateX = ((centerY - y) / centerY) * 6;
+
+        card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px) scale(1.03)`;
+
+        // Move the ambient glow to follow cursor
+        const glow = card.querySelector('.tvd-card-glow');
+        if (glow) {
+          glow.style.left = x + 'px';
+          glow.style.top = y + 'px';
+        }
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
+  }
+
+  /* ============================================================
+     5. KEYBOARD NAVIGATION (ARROW KEYS)
+     ============================================================ */
+  document.addEventListener('keydown', (e) => {
+    // Only when modal is NOT open
+    if (modal.classList.contains('active')) {
+      if (e.key === 'Escape') closeModal();
+      return;
+    }
+
+    if (isGrid) return; // grid has no horizontal scroll to drive
+
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      track.scrollBy({ left: scrollDistance(), behavior: 'smooth' });
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      track.scrollBy({ left: -scrollDistance(), behavior: 'smooth' });
+    }
+  });
+
+  /* ============================================================
+     6. CATEGORY FILTERING WITH ANIMATED TRANSITION
+     ============================================================ */
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filter = btn.getAttribute('data-filter');
+
+      // Animate out first
+      cards.forEach(card => {
+        card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.92)';
+      });
+
+      setTimeout(() => {
+        cards.forEach(card => {
+          const cat = card.getAttribute('data-category');
+          card.style.display = (filter === 'all' || cat === filter) ? 'block' : 'none';
+        });
+
+        track.scrollTo({ left: 0 });
+
+        // Animate in with stagger
+        const visible = [...cards].filter(c => c.style.display !== 'none');
+        setStatus(visible.length);
+        visible.forEach((card, i) => {
+          setTimeout(() => {
+            card.style.transition = 'opacity 0.45s cubic-bezier(0.16,1,0.3,1), transform 0.45s cubic-bezier(0.16,1,0.3,1), filter 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease';
+            card.style.opacity = '1';
+            card.style.transform = '';
+          }, i * 70);
+        });
+
+        setTimeout(() => {
+          updateArrowState();
+          updateProgressBar();
+        }, 300);
+      }, 280);
+    });
+  });
+
+  /* ============================================================
+     7. CHARACTER DOSSIER MODAL
+     ============================================================ */
+  cards.forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (hasDragged) return;
+
+      const name = card.dataset.name || '';
+      const role = card.dataset.role || '';
+      const species = card.dataset.species || '';
+      const origin = card.dataset.origin || 'Mystic Falls';
+      const status = card.dataset.status || 'Immortal';
+      const quote = card.dataset.quote || '';
+      const bio = card.dataset.bio || '';
+      const img = card.querySelector('.tvd-card-img').src;
+      const tag = card.querySelector('.tvd-card-tag').textContent;
+
+      modalName.textContent = name;
+      modalRole.textContent = role;
+      modalBadge.textContent = tag;
+      modalSpecies.textContent = species;
+      modalOrigin.textContent = origin;
+      modalStatus.textContent = status;
+      modalFaction.textContent = FACTIONS[card.dataset.id] || 'Unaffiliated';
+      modalQuote.innerHTML = quote;
+      modalBio.textContent = bio;
+      modalImg.src = img;
+      modalImg.alt = name;
+
+      lastFocused = card;
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      modalClose.focus();
+    });
+
+    // Also open on Enter / Space for accessibility (cards act as buttons)
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        card.click();
+      }
+    });
+  });
+
+  const closeModal = () => {
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (lastFocused && typeof lastFocused.focus === 'function') {
+      lastFocused.focus();
+      lastFocused = null;
+    }
+  };
+
+  modalClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  // Trap Tab focus within the open dialog
+  modal.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab' || !modal.classList.contains('active')) return;
+    const focusable = modal.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])');
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  });
+
+  /* ============================================================
+     8. FLOATING EMBER PARTICLES (CANVAS)
+     ============================================================ */
+  const canvas = document.getElementById('tvdEmbers');
+  if (canvas && !prefersReducedMotion) {
+    const ctx = canvas.getContext('2d');
+    let embers = [];
+    const EMBER_COUNT = 40;
+
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas, { passive: true });
+
+    class Ember {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + Math.random() * 60;
+        this.size = Math.random() * 3 + 1;
+        this.speedY = -(Math.random() * 0.7 + 0.15);
+        this.speedX = (Math.random() - 0.5) * 0.3;
+        this.opacity = Math.random() * 0.6 + 0.15;
+        this.fadeRate = Math.random() * 0.003 + 0.001;
+        this.wobble = Math.random() * 2;
+        this.wobbleSpeed = Math.random() * 0.02 + 0.005;
+        this.life = 0;
+      }
+      update() {
+        this.life++;
+        this.y += this.speedY;
+        this.x += this.speedX + Math.sin(this.life * this.wobbleSpeed) * 0.3;
+        this.opacity -= this.fadeRate;
+        if (this.opacity <= 0 || this.y < -20) this.reset();
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        const r = 180 + Math.random() * 55;
+        ctx.fillStyle = `rgba(${r}, ${15 + Math.random()*30}, ${10 + Math.random()*15}, ${this.opacity})`;
+        ctx.shadowColor = `rgba(${r}, 20, 10, ${this.opacity * 0.6})`;
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    for (let i = 0; i < EMBER_COUNT; i++) {
+      const e = new Ember();
+      e.y = Math.random() * canvas.height; // Spread initially
+      embers.push(e);
+    }
+
+    const animateEmbers = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      embers.forEach(e => { e.update(); e.draw(); });
+      requestAnimationFrame(animateEmbers);
+    };
+    animateEmbers();
+  }
+
+
+
+});
+</script>
+
+{% endblock %}

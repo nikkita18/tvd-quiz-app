@@ -1,0 +1,486 @@
+{% extends 'userLayout.html' %}
+
+{% block title %}Scoreboard | Mystic Realm{% endblock %}
+
+{% block header %}
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+  <span class="sb-header-badge">Battle Results</span>
+  <h2 style="margin: 0;">⚔ Trial Scoreboard</h2>
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+  :root {
+    --bg-dark: #000000;
+    --card-bg: rgba(10, 10, 10, 0.92);
+    --card-border: rgba(230, 57, 70, 0.25);
+    --crimson: #e63946;
+    --crimson-dark: #c1121f;
+    --crimson-glow: rgba(230, 57, 70, 0.4);
+    --gold: #fbbf24;
+    --silver: #94a3b8;
+    --bronze: #cd7f32;
+    --text-primary: #f8f9fa;
+    --text-muted: #94a3b8;
+  }
+
+  .sb-wrapper {
+    max-width: 950px;
+    margin: 0 auto 60px auto;
+    padding: 10px 15px;
+    font-family: 'Jost', 'Outfit', sans-serif;
+    color: var(--text-primary);
+  }
+
+  .sb-header-badge {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: rgba(230, 57, 70, 0.15);
+    color: #ff6b77;
+    padding: 3px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(230, 57, 70, 0.4);
+    font-weight: 600;
+  }
+
+  /* Level Pill Tabs */
+  .level-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+  }
+
+  .level-pill {
+    padding: 10px 28px;
+    border-radius: 999px;
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.9);
+    color: #cbd5e1;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .level-pill:hover {
+    border-color: rgba(230, 57, 70, 0.5);
+    background: rgba(230, 57, 70, 0.1);
+    color: #fff;
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
+
+  .level-pill.active {
+    background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    border-color: var(--crimson);
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(230, 57, 70, 0.4);
+  }
+
+  /* Score Summary Card */
+  .score-summary {
+    background: linear-gradient(135deg, rgba(230, 57, 70, 0.18) 0%, var(--card-bg) 70%);
+    border: 1px solid var(--card-border);
+    border-radius: 22px;
+    padding: 32px 30px;
+    margin-bottom: 30px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(230, 57, 70, 0.1);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .score-summary::after {
+    content: '';
+    position: absolute;
+    right: -60px;
+    top: -60px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(230, 57, 70, 0.2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .score-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .score-stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    background: rgba(230, 57, 70, 0.12);
+    border: 1px solid rgba(230, 57, 70, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: #ff6b77;
+  }
+
+  .score-stat-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .score-stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+  }
+
+  /* Podium Section */
+  .podium-section {
+    margin-bottom: 35px;
+  }
+
+  .section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title i { color: var(--crimson); }
+
+  .podium-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 18px;
+  }
+
+  .podium-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 26px 22px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .podium-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+  }
+
+  .podium-card.rank-1 {
+    border: 1.5px solid rgba(251, 191, 36, 0.5);
+  }
+  .podium-card.rank-1::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .podium-card.rank-2 {
+    border: 1.5px solid rgba(148, 163, 184, 0.35);
+  }
+  .podium-card.rank-2::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--silver), transparent);
+  }
+
+  .podium-card.rank-3 {
+    border: 1.5px solid rgba(205, 127, 50, 0.4);
+  }
+  .podium-card.rank-3::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--bronze), transparent);
+  }
+
+  .medal-badge {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+
+  .rank-1 .medal-badge {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+  }
+
+  .rank-2 .medal-badge {
+    background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+    box-shadow: 0 0 20px rgba(148, 163, 184, 0.3);
+  }
+
+  .rank-3 .medal-badge {
+    background: linear-gradient(135deg, #cd7f32 0%, #a0522d 100%);
+    box-shadow: 0 0 20px rgba(205, 127, 50, 0.3);
+  }
+
+  .podium-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .podium-score {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .podium-rank-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    margin-top: 8px;
+  }
+
+  .rank-1 .podium-rank-label { color: var(--gold); }
+  .rank-2 .podium-rank-label { color: var(--silver); }
+  .rank-3 .podium-rank-label { color: var(--bronze); }
+
+  /* Empty State */
+  .empty-podium {
+    background: var(--card-bg);
+    border: 1px dashed rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 50px 30px;
+    text-align: center;
+    color: var(--text-muted);
+  }
+
+  .empty-podium i {
+    font-size: 3rem;
+    color: rgba(230, 57, 70, 0.4);
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  /* Action Buttons */
+  .sb-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
+
+  .btn-sb-primary {
+    background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-dark) 100%);
+    color: #fff;
+    border: none;
+    padding: 14px 30px;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 20px rgba(230, 57, 70, 0.35);
+    transition: all 0.3s ease;
+  }
+
+  .btn-sb-primary:hover {
+    color: #fff;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(230, 57, 70, 0.55);
+  }
+
+  .btn-sb-secondary {
+    background: rgba(0, 0, 0, 0.85);
+    color: #e2e8f0;
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    padding: 14px 24px;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-sb-secondary:hover {
+    color: #fff;
+    text-decoration: none;
+    border-color: rgba(230, 57, 70, 0.5);
+    background: rgba(230, 57, 70, 0.1);
+    transform: translateY(-2px);
+  }
+
+  /* Motivational Quote */
+  .sb-quote {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    text-align: center;
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .sb-quote strong { color: #ff858f; }
+
+  @media (max-width: 768px) {
+    .score-summary { grid-template-columns: 1fr 1fr; }
+    .podium-grid { grid-template-columns: 1fr; }
+    .sb-actions { flex-direction: column; align-items: stretch; text-align: center; }
+    .btn-sb-primary, .btn-sb-secondary { justify-content: center; }
+  }
+</style>
+
+<div class="sb-wrapper">
+
+  <!-- LEVEL PILLS -->
+  <div class="level-tabs">
+    <a href="/userScoreBoard?level=1" class="level-pill {% if level == '1' or level == 1 %}active{% endif %}">
+      <i class="fas fa-feather-alt"></i> Level 1
+    </a>
+    <a href="/userScoreBoard?level=2" class="level-pill {% if level == '2' or level == 2 %}active{% endif %}">
+      <i class="fas fa-khanda"></i> Level 2
+    </a>
+    <a href="/userScoreBoard?level=3" class="level-pill {% if level == '3' or level == 3 %}active{% endif %}">
+      <i class="fas fa-skull"></i> Level 3
+    </a>
+  </div>
+
+  <!-- SCORE SUMMARY -->
+  <div class="score-summary">
+    <div class="score-stat">
+      <div class="score-stat-icon"><i class="fas fa-layer-group"></i></div>
+      <div class="score-stat-label">Trial Level</div>
+      <div class="score-stat-value">{{ level if level else '—' }}</div>
+    </div>
+    <div class="score-stat">
+      <div class="score-stat-icon"><i class="fas fa-star"></i></div>
+      <div class="score-stat-label">Your Score</div>
+      <div class="score-stat-value">{{ score if score is not none else '—' }}</div>
+    </div>
+    <div class="score-stat">
+      <div class="score-stat-icon"><i class="fas fa-users"></i></div>
+      <div class="score-stat-label">Total Contenders</div>
+      <div class="score-stat-value">{{ total if total else 0 }}</div>
+    </div>
+    <div class="score-stat">
+      <div class="score-stat-icon"><i class="fas fa-calendar-alt"></i></div>
+      <div class="score-stat-label">Date</div>
+      <div class="score-stat-value" style="font-size: 1rem; padding-top: 6px;">
+        <script>
+          const d = new Date(Date.now());
+          document.write(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }));
+        </script>
+      </div>
+    </div>
+  </div>
+
+  <!-- PODIUM / TOP 3 -->
+  <div class="podium-section">
+    <div class="section-title">
+      <i class="fas fa-trophy"></i> Top Contenders
+    </div>
+
+    {% if topRank %}
+    <div class="podium-grid">
+      {% for t in topRank %}
+        {% if t[2] == 1 %}
+          {% set rank_class = 'rank-1' %}
+          {% set medal_emoji = '🥇' %}
+          {% set rank_label = 'Champion' %}
+        {% elif t[2] == 2 %}
+          {% set rank_class = 'rank-2' %}
+          {% set medal_emoji = '🥈' %}
+          {% set rank_label = 'Runner-up' %}
+        {% elif t[2] == 3 %}
+          {% set rank_class = 'rank-3' %}
+          {% set medal_emoji = '🥉' %}
+          {% set rank_label = 'Third Place' %}
+        {% else %}
+          {% set rank_class = '' %}
+          {% set medal_emoji = '🏅' %}
+          {% set rank_label = 'Contender' %}
+        {% endif %}
+
+        <div class="podium-card {{ rank_class }}">
+          <div class="medal-badge">{{ t[2] }}</div>
+          <div class="podium-name">{{ t[0] }}</div>
+          <div class="podium-score">
+            <i class="fas fa-star" style="color: var(--gold); font-size: 0.8rem;"></i>
+            Score: {{ t[1] }}
+          </div>
+          <div class="podium-rank-label">{{ rank_label }}</div>
+        </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-podium">
+      <i class="fas fa-ghost"></i>
+      <h3 style="color: #fff; margin-bottom: 8px;">No Contenders Yet</h3>
+      <p>No players have attempted this level's trial. Be the first to claim the throne!</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ACTION BUTTONS -->
+  <div class="sb-actions">
+    <a href="/userPlayQuiz" class="btn-sb-primary">
+      <i class="fas fa-redo-alt"></i> Play Again
+    </a>
+    <a href="/userDash" class="btn-sb-secondary">
+      <i class="fas fa-home"></i> Back to Dashboard
+    </a>
+  </div>
+
+  <!-- MOTIVATIONAL QUOTE -->
+  <div class="sb-quote">
+    "The real monster is not the one lurking in the shadows — it's the one who <strong>refuses to fight</strong>." 🩸
+  </div>
+
+</div>
+{% endblock %}

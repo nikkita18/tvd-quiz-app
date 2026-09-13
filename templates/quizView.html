@@ -1,0 +1,238 @@
+{% extends 'adminLayout.html' %}
+
+{% block header %}
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+  <span class="header-badge" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; background: rgba(230, 57, 70, 0.15); color: #e63946; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(230, 57, 70, 0.3);">Question Database</span>
+  <h2 style="margin: 0; font-family: 'Cinzel', serif; font-weight: 700; color: #fff;">📚 Quiz Vault Inventory</h2>
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+  .table-card {
+    background: rgba(10, 10, 10, 0.92);
+    border: 1px solid rgba(230, 57, 70, 0.25);
+    border-radius: 20px;
+    padding: 25px;
+    margin: 20px auto 50px auto;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+    overflow-x: auto;
+  }
+  .search-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .search-input-box {
+    position: relative;
+    flex: 1;
+    min-width: 250px;
+  }
+  .search-input-box i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+  }
+  .search-input-box input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 10px 16px 10px 38px;
+    color: #fff;
+    font-size: 0.9rem;
+    transition: all 0.25s ease;
+  }
+  .search-input-box input:focus {
+    border-color: #e63946;
+    outline: none;
+    box-shadow: 0 0 12px rgba(230, 57, 70, 0.4);
+  }
+  .level-filter-btns {
+    display: flex;
+    gap: 8px;
+  }
+  .filter-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    background: rgba(230, 57, 70, 0.2);
+    border-color: #e63946;
+    color: #fff;
+  }
+  .custom-table {
+    width: 100%;
+    color: #e2e8f0;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+  }
+  .custom-table th {
+    background: rgba(0, 0, 0, 0.9);
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    padding: 14px 16px;
+    border: none;
+    border-bottom: 2px solid rgba(230, 57, 70, 0.3);
+  }
+  .custom-table tr.data-row {
+    background: rgba(18, 18, 18, 0.8);
+    transition: all 0.25s ease;
+  }
+  .custom-table tr.data-row:hover {
+    background: rgba(230, 57, 70, 0.1);
+    transform: translateY(-2px);
+  }
+  .custom-table td {
+    padding: 16px;
+    vertical-align: middle;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .custom-table td:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+  }
+  .custom-table td:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+  .level-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.78rem;
+  }
+  .level-1 { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
+  .level-2 { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+  .level-3 { background: rgba(230, 57, 70, 0.2); color: #ff6b77; border: 1px solid rgba(230, 57, 70, 0.4); }
+
+  .btn-delete-custom {
+    background: rgba(225, 29, 72, 0.15);
+    color: #f43f5e;
+    border: 1px solid rgba(225, 29, 72, 0.4);
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.25s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-delete-custom:hover {
+    background: #e11d48;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(225, 29, 72, 0.5);
+    text-decoration: none;
+  }
+</style>
+
+<div class="table-card">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for msg in messages %}
+        <div class="alert alert-danger mb-4" style="background: rgba(225, 29, 72, 0.2); border: 1px solid rgba(225, 29, 72, 0.4); color: #fda4af; border-radius: 12px;">
+            {{msg}}
+        </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Live Search & Level Filter Toolbar -->
+    <div class="search-toolbar">
+      <div class="search-input-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="quizSearchInput" placeholder="Live search by question or keyword..." onkeyup="filterQuestions()">
+      </div>
+      <div class="level-filter-btns">
+        <button class="filter-btn active" onclick="setLevelFilter('all', this)">All</button>
+        <button class="filter-btn" onclick="setLevelFilter('1', this)">Level 1</button>
+        <button class="filter-btn" onclick="setLevelFilter('2', this)">Level 2</button>
+        <button class="filter-btn" onclick="setLevelFilter('3', this)">Level 3</button>
+      </div>
+    </div>
+
+    <table class="custom-table" id="questionsTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Level</th>
+                <th>Question</th>
+                <th>Option 1</th>
+                <th>Option 2</th>
+                <th>Correct Ans</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in record %}
+            <tr class="data-row" data-level="{{r[1]}}">
+                <td style="font-weight: 700; color: #94a3b8;">#{{r[0]}}</td>
+                <td>
+                    <span class="level-badge level-{{r[1]}}">Level {{r[1]}}</span>
+                </td>
+                <td class="q-text-cell" style="font-weight: 500; max-width: 250px;">{{r[2]}}</td>
+                <td style="color: #cbd5e1;">{{r[3]}}</td>
+                <td style="color: #cbd5e1;">{{r[4]}}</td>
+                <td>
+                    <span style="background: rgba(16, 185, 129, 0.18); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 0.8rem;">
+                      Opt {{r[5]}}
+                    </span>
+                </td>
+                <td>
+                    <a href="/quizDelete?quesID={{r[0]}}" class="btn-delete-custom" onclick="return confirm('Are you sure you want to delete this question?')">
+                      <i class="fas fa-trash-alt me-1"></i> Delete
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+  let activeLevel = 'all';
+
+  function setLevelFilter(lvl, btn) {
+    activeLevel = lvl;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterQuestions();
+  }
+
+  function filterQuestions() {
+    const query = document.getElementById('quizSearchInput').value.toLowerCase();
+    const rows = document.querySelectorAll('#questionsTable tbody tr.data-row');
+
+    rows.forEach(row => {
+      const level = row.getAttribute('data-level');
+      const text = row.innerText.toLowerCase();
+
+      const matchesSearch = text.includes(query);
+      const matchesLevel = (activeLevel === 'all' || level === activeLevel);
+
+      if (matchesSearch && matchesLevel) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+</script>
+{% endblock %}
