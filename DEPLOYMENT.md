@@ -84,6 +84,8 @@ In the **Environment Variables** section on Vercel before clicking Deploy, add t
 | `DB_NAME` | `b12_app` | Cloud Database Name |
 | `DB_SSL` | `true` | Set to `true` for cloud DBs (TiDB, Aiven, etc.) |
 | `SECRET_KEY` | `random-secure-32-char-string` | Secret key for Flask sessions |
+| `ADMIN_USERNAME` | `admin` | Admin dashboard username |
+| `ADMIN_PASSWORD` | `your_secret_admin_password` | Admin dashboard password |
 | `MAIL_SERVER` | `smtp.gmail.com` | SMTP server for OTP emails |
 | `MAIL_PORT` | `587` | SMTP Port |
 | `MAIL_USE_TLS` | `true` | Use TLS |

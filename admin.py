@@ -1,15 +1,21 @@
 
+import os
+from dotenv import load_dotenv
 from db import get_connection
 from flask import session
+
+load_dotenv()
 
 
 class AdminOperation:
     def connection(self):
         return get_connection()
     
-    def adminLogin(self,user,password):
-        if user=='admin' and password=='admin1234':
-            session['admin']='admin'
+    def adminLogin(self, user, password):
+        admin_user = os.environ.get('ADMIN_USERNAME', 'admin')
+        admin_pass = os.environ.get('ADMIN_PASSWORD', 'admin1234')
+        if user == admin_user and password == admin_pass:
+            session['admin'] = 'admin'
             return True
         
         return False
