@@ -2160,13 +2160,15 @@ p, .tvd-subtitle {
   /* Right Group in Mobile View */
   .tvd-nav-right-group {
     display: flex !important;
+    align-items: center !important;
     margin-left: auto !important;
-    margin-right: 12px !important;
-    gap: 8px !important;
+    margin-right: 0 !important;
+    gap: 12px !important;
   }
 
   .tvd-nav-glyph-btn {
     font-size: 0.78rem !important;
+    padding: 4px 6px !important;
   }
 
   /* Dashboard Sidebars Responsive Off-Canvas */

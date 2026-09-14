@@ -102,12 +102,6 @@
       <img src="{{ url_for('static', filename='img/tvd_nav_logo.png') }}" alt="The Vampire Diaries" class="tvd-nav-logo">
     </a>
 
-    <button class="tvd-nav-toggle" id="tvdNavToggle" aria-label="Toggle navigation" type="button">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-
     <ul class="nav-links" id="tvdNavLinks">
       <li><a href="/" class="{% if request.path == '/' %}active{% endif %}"><i class="fas fa-home"></i> Home</a></li>
       <li><a href="/about" class="{% if request.path == '/about' %}active{% endif %}"><i class="fas fa-book-open"></i> About</a></li>
@@ -122,6 +116,12 @@
       <a href="/userSignup" class="tvd-nav-glyph-btn" style="font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.8px; color: #ff4760;">SIGN UP</a>
       <div class="tvd-nav-divider"></div>
       <span class="tvd-nav-crest-glyph" title="Salvatore Legacy">⚜</span>
+
+      <button class="tvd-nav-toggle" id="tvdNavToggle" aria-label="Toggle navigation" type="button">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
   </nav>
   <div class="tvd-nav-backdrop" id="tvdNavBackdrop"></div>
