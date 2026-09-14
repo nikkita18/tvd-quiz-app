@@ -366,6 +366,18 @@ def userRecord():
         flash("Please login to access this page!!")
         return redirect(url_for('adminLogin'))
 
+import traceback
+
+@app.errorhandler(500)
+def internal_error(e):
+    tb = traceback.format_exc()
+    return f"<pre>500 Internal Server Error\n\n{tb}\n\nOriginal error: {e}</pre>", 500
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    tb = traceback.format_exc()
+    return f"<pre>Error: {type(e).__name__}\n\n{tb}\n\nDetails: {e}</pre>", 500
+
 
 if __name__=='__main__':
     app.run(port=5001,debug=True)   # server activate  #debug=true :- auto save   # port= 5001  :- to change port

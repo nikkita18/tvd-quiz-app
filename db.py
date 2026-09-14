@@ -26,12 +26,15 @@ def get_connection():
             'database': DB_NAME,
         }
         if DB_SSL:
+            import certifi
+            config['ssl_ca'] = certifi.where()
             config['ssl_disabled'] = False
         return mysql.connector.connect(**config)
     except Exception as e1:
         try:
             import pymysql
-            ssl_dict = {'ssl': {}} if DB_SSL else {}
+            import certifi
+            ssl_dict = {'ssl': {'ca': certifi.where(), 'ssl_verify_cert': True, 'ssl_verify_identity': True}} if DB_SSL else {}
             return pymysql.connect(
                 host=DB_HOST,
                 port=DB_PORT,
