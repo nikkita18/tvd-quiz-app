@@ -104,31 +104,33 @@
       <input type="text" id="userSearchInput" placeholder="Live search hunters by name, email or mobile..." onkeyup="filterUsers()">
     </div>
 
-    <table class="user-table" id="usersTable">
-        <thead>
-            <tr>
-                <th>Hunter Name</th>
-                <th>Mobile Contact</th>
-                <th>Email Address</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for r in record %}
-            <tr class="user-row">
-                <td>
-                    <div style="display: flex; align-items: center;">
-                      <div class="user-avatar-icon">
-                        <i class="fas fa-user-ninja"></i>
+    <div class="tvd-table-responsive">
+      <table class="user-table" id="usersTable">
+          <thead>
+              <tr>
+                  <th>Hunter Name</th>
+                  <th>Mobile Contact</th>
+                  <th>Email Address</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for r in record %}
+              <tr class="user-row">
+                  <td>
+                      <div style="display: flex; align-items: center;">
+                        <div class="user-avatar-icon">
+                          <i class="fas fa-user-ninja"></i>
+                        </div>
+                        <span style="font-weight: 600; color: #f8f9fa;">{{r[0]}} {{r[1]}}</span>
                       </div>
-                      <span style="font-weight: 600; color: #f8f9fa;">{{r[0]}} {{r[1]}}</span>
-                    </div>
-                </td>
-                <td style="color: #cbd5e1;"><i class="fas fa-phone-alt me-2" style="color: #64748b; font-size: 0.85rem;"></i> {{r[2]}}</td>
-                <td style="color: #e63946; font-weight: 500;"><i class="fas fa-envelope me-2" style="color: #64748b; font-size: 0.85rem;"></i> {{r[3]}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                  </td>
+                  <td style="color: #cbd5e1;"><i class="fas fa-phone-alt me-2" style="color: #64748b; font-size: 0.85rem;"></i> {{r[2]}}</td>
+                  <td style="color: #e63946; font-weight: 500;"><i class="fas fa-envelope me-2" style="color: #64748b; font-size: 0.85rem;"></i> {{r[3]}}</td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+    </div>
 </div>
 
 <script>
