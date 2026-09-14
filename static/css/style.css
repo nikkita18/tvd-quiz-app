@@ -2202,6 +2202,87 @@ p, .tvd-subtitle {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
+   📱 TABLETS & PHONES (< 768px) - Mobile Layout Adaptations
+   ══════════════════════════════════════════════════════════════════════ */
+@media screen and (max-width: 768px) {
+  /* About Section on Small Mobile Screens Only */
+  .about-content {
+    flex-direction: column !important;
+    padding: 1.5rem 1rem !important;
+    gap: 1.5rem !important;
+  }
+
+  .about-left {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+  }
+
+  .scrolling-images {
+    flex-direction: row !important;
+    animation: none !important;
+    gap: 12px !important;
+    display: flex !important;
+  }
+
+  .scrolling-images img {
+    width: 180px !important;
+    min-width: 180px !important;
+    height: 130px !important;
+    object-fit: cover !important;
+    flex-shrink: 0 !important;
+    border-width: 2px !important;
+  }
+
+  .about-right {
+    width: 100% !important;
+    padding: 1.25rem !important;
+    font-size: 0.92rem !important;
+    line-height: 1.6 !important;
+    border-left-width: 3px !important;
+  }
+
+  .about-right img {
+    width: 100% !important;
+    height: auto !important;
+    margin-top: 12px !important;
+  }
+
+  .overlay-video {
+    height: 45vh !important;
+    min-height: 260px !important;
+  }
+
+  .overlay-text {
+    top: 75% !important;
+    left: 15px !important;
+    right: 15px !important;
+  }
+
+  .overlay-text .headline {
+    font-size: 1.05rem !important;
+  }
+
+  .overlay-text .subline {
+    font-size: 0.75rem !important;
+  }
+
+  /* Salvatore Battle Row on Mobile */
+  .tvd-battle-row {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    padding: 0 10px !important;
+  }
+
+  .quote-card {
+    min-width: 240px !important;
+    font-size: 0.95rem !important;
+    padding: 0.85rem !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
    📱 MOBILE PHONES (< 600px)
    ══════════════════════════════════════════════════════════════════════ */
 @media screen and (max-width: 600px) {
