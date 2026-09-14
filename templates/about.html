@@ -472,13 +472,14 @@
   <div class="about-content">
     <div class="about-left">
       <div class="scrolling-images">
-        <img src="{{ url_for('static', filename='img/tvd_heart.jpeg') }}" alt="TVD Heart">
-        <img src="{{ url_for('static', filename='img/tvd_scroll_1.jpeg') }}" alt="Mystic Falls Scroll">
-        <img src="{{ url_for('static', filename='img/elena_banner.jpeg') }}" alt="Elena Gilbert">
+        <img src="{{ url_for('static', filename='img/tvd_heart.jpeg') }}" alt="">
+        <img src="{{ url_for('static', filename='img/tvd_scroll_1.jpeg') }}" alt="">
+        <img src="{{ url_for('static', filename='img/elena_banner.jpeg') }}" alt="">
+       
       </div>
     </div>
     <div class="about-right">
-      <h3 style="color: rgba(195, 41, 41, 0.889); font-family: 'Cinzel', serif; font-size: 1.8rem; margin-bottom: 12px;">The Legacy</h3>
+      <h3 style="color: rgba(195, 41, 41, 0.889);">The Legacy</h3>
       <p>
         The Vampire Diaries tells a story drenched in blood, love, and betrayal.
         Set in Mystic Falls, it follows Elena Gilbert as she finds herself
@@ -486,19 +487,19 @@
         dangerous. As secrets unfold, friendships are tested, and hearts broken —
         the town’s supernatural history begins to awaken.
       </p>
-      <img src="{{ url_for('static', filename='img/mystic_legacy.png') }}" alt="Mystic Falls Legacy" class="img-fluid" style="width: 100%; max-width: 100%; height: auto; object-fit: cover; border-radius: 12px; margin-top: 15px; border: 1px solid rgba(230, 57, 70, 0.3);">
+      <img src="{{ url_for('static', filename='img/mystic_legacy.png') }}" alt="Mystic Falls Legacy" class="img-fluid" style="width: 100%; max-width: 100%; height: auto; object-fit: cover; border-radius: 12px; margin-top: 15px;">
     </div>
-  </div>
-
-  <div class="overlay-video">
+    <div class="overlay-video">
     <video autoplay muted loop playsinline>
       <source src="{{ url_for('static', filename='video/7a9bcc1ebadfbc4c561b60e51d2c8e6a.mp4') }}" type="video/mp4" />
-    </video>
+      </video>
     <div class="overlay-text">
       <h1 class="headline">“They were never just brothers...”</h1>
       <p class="subline">Welcome to the story that never ends.</p>
     </div>
   </div>
+  </div>
+  
 </section>
 <!-- 🩸 NEW QUOTE SLIDER -->
 <section class="quote-slider-wrapper">
