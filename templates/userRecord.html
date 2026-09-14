@@ -19,32 +19,44 @@
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
   }
   .user-search-bar {
-    position: relative;
     margin-bottom: 24px;
     padding-bottom: 18px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
-  .user-search-bar i {
+  .user-search-box {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+  .user-search-box i {
     position: absolute;
-    left: 14px;
-    top: 36%;
+    left: 16px;
+    top: 50%;
     transform: translateY(-50%);
     color: #64748b;
+    font-size: 0.95rem;
+    pointer-events: none;
+    transition: color 0.25s ease;
   }
-  .user-search-bar input {
+  .user-search-box input {
     width: 100%;
     background: rgba(0, 0, 0, 0.7);
     border: 1.5px solid rgba(255, 255, 255, 0.12);
     border-radius: 12px;
-    padding: 10px 16px 10px 38px;
+    padding: 12px 18px 12px 46px;
     color: #fff;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     transition: all 0.25s ease;
+    line-height: 1.4;
   }
-  .user-search-bar input:focus {
+  .user-search-box input:focus {
     border-color: #e63946;
     outline: none;
     box-shadow: 0 0 12px rgba(230, 57, 70, 0.4);
+  }
+  .user-search-box:focus-within i {
+    color: #e63946;
   }
   .user-table {
     width: 100%;
@@ -100,8 +112,10 @@
 
 <div class="user-table-card">
     <div class="user-search-bar">
-      <i class="fas fa-search"></i>
-      <input type="text" id="userSearchInput" placeholder="Live search hunters by name, email or mobile..." onkeyup="filterUsers()">
+      <div class="user-search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="userSearchInput" placeholder="Live search hunters by name, email or mobile..." onkeyup="filterUsers()">
+      </div>
     </div>
 
     <div class="tvd-table-responsive">
