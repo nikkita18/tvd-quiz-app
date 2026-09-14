@@ -1278,8 +1278,6 @@ s-button:hover{
 
 
 /* about section */
-
-
 .about-mystic {
   font-family: 'Georgia', serif;
   background: #000;
@@ -1287,84 +1285,92 @@ s-button:hover{
   overflow: hidden;
 }
 
+.about-content {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 30px;
+  padding: 3rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.about-left {
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.scrolling-images {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.scrolling-images img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2.5px solid #8B0000;
+  box-shadow: 0 0 15px rgba(139, 0, 0, 0.4);
+}
+
+.about-right {
+  background-color: rgba(20, 0, 0, 0.6);
+  padding: 2.5rem;
+  border-left: 4px solid #B22222;
+  border-radius: 14px;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
 .overlay-video {
   position: relative;
-  height: 80vh;
+  width: 100%;
+  height: 55vh;
+  min-height: 350px;
   overflow: hidden;
+  margin-top: 15px;
 }
 
 .overlay-video video {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.3;
-  filter: grayscale(50%) brightness(80%) contrast(140%);
+  opacity: 0.35;
+  filter: grayscale(40%) brightness(80%) contrast(140%);
 }
 
 .overlay-text {
-  position:absolute;
-  top: 85%;
-  left: 5%;
+  position: absolute;
+  top: 50%;
+  left: 6%;
   transform: translateY(-50%);
   color: #fff;
+  z-index: 2;
 }
 
 .overlay-text .headline {
-  font-size: 1.3rem;
-  color: #B22222;
+  font-size: 1.6rem;
+  font-family: 'Cinzel', serif;
+  color: #ff4760;
+  margin-bottom: 6px;
+  text-shadow: 0 0 15px rgba(255, 71, 96, 0.6);
   animation: fadeIn 3s ease;
 }
 
 .overlay-text .subline {
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: #dcdcdc;
-  margin-top: 0.5rem;
+  margin-top: 0.3rem;
   animation: fadeIn 5s ease;
 }
 
 @keyframes fadeIn {
   0% { opacity: 0; transform: translateY(10px); }
   100% { opacity: 1; transform: translateY(0); }
-}
-
-.about-content {
-  display: flex;
-  flex-direction: row;
-  padding: 3rem;
-  gap: 2rem;
-}
-
-.about-left {
-  flex: 1;
-}
-
-.scrolling-images {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  animation: scrollImages 10s linear infinite;
-}
-
-.scrolling-images img {
-  width: 100%;
-  border-radius: 10px;
-  border: 3px solid #8B0000;
-  box-shadow: 0 0 15px #4b0000;
-}
-
-@keyframes scrollImages {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-50%); }
-}
-
-.about-right {
-  flex: 2.5;
-  background-color: rgba(20, 0, 0, 0.6);
-  padding: 2rem;
-  border-left: 4px solid #B22222;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  line-height: 1.8;
 }
 
 
@@ -2084,6 +2090,11 @@ p, .tvd-subtitle {
   }
 }
 
+/* Hide Mobile Auth Group on Desktop by Default */
+.mobile-auth-group {
+  display: none !important;
+}
+
 /* ══════════════════════════════════════════════════════════════════════
    📱 TABLETS & MOBILE PHONES (< 992px)
    ══════════════════════════════════════════════════════════════════════ */
@@ -2138,6 +2149,10 @@ p, .tvd-subtitle {
     visibility: visible !important;
   }
 
+  .nav-links.open .mobile-auth-group {
+    display: flex !important;
+  }
+
   .nav-links li {
     width: 100% !important;
     height: auto !important;
@@ -2163,7 +2178,7 @@ p, .tvd-subtitle {
   }
 
   .nav-links .mobile-auth-group {
-    display: flex !important;
+    display: flex;
     flex-direction: column;
     gap: 10px;
     margin-top: 16px;
@@ -2186,27 +2201,68 @@ p, .tvd-subtitle {
     box-shadow: 0 4px 15px rgba(200, 16, 46, 0.5);
   }
 
-  /* Home About Section Stacking */
+  /* Home About Section Side-by-Side on Tablet & Mobile (Zero Blank Space) */
   .about-content {
-    flex-direction: column !important;
-    display: flex !important;
-    gap: 24px !important;
-    padding: 20px 16px !important;
+    display: grid !important;
+    grid-template-columns: 110px 1fr !important;
+    gap: 14px !important;
+    padding: 20px 14px !important;
+    align-items: start !important;
   }
 
-  .about-left, .about-right {
+  .about-left {
     width: 100% !important;
-    max-width: 100% !important;
+    max-width: 110px !important;
   }
 
   .scrolling-images {
-    justify-content: center !important;
-    flex-wrap: wrap !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    animation: none !important;
   }
 
   .scrolling-images img {
-    max-width: 140px !important;
-    height: auto !important;
+    width: 100% !important;
+    height: 95px !important;
+    object-fit: cover !important;
+    border-radius: 8px !important;
+    border: 1.5px solid #8B0000 !important;
+    box-shadow: 0 0 10px rgba(139, 0, 0, 0.4) !important;
+  }
+
+  .about-right {
+    width: 100% !important;
+    padding: 16px 14px !important;
+    border-left: 3px solid #B22222 !important;
+    font-size: 0.85rem !important;
+    line-height: 1.5 !important;
+  }
+
+  .about-right h3 {
+    font-size: 1.25rem !important;
+    margin-bottom: 8px !important;
+  }
+
+  .overlay-video {
+    width: 100% !important;
+    height: 250px !important;
+    min-height: 250px !important;
+    margin-top: 15px !important;
+  }
+
+  .overlay-text {
+    top: 50% !important;
+    left: 5% !important;
+    width: 90% !important;
+  }
+
+  .overlay-text .headline {
+    font-size: 1.15rem !important;
+  }
+
+  .overlay-text .subline {
+    font-size: 0.8rem !important;
   }
 
   /* Dashboard Sidebars Responsive Off-Canvas */
